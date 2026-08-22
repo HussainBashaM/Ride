@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>GoRide — Ride Your Way</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="nav">
+  <a class="brand" href="index.html">Go<span>Ride</span></a>
+  <nav>
+    <a href="user/login.html">User Login</a>
+    <a href="driver/login.html">Driver Login</a>
+    <a class="outline" href="driver/register.html">Become a Driver</a>
+  </nav>
+</header>
+<main class="hero">
+  <section>
+    <p class="eyebrow">SMART • FAST • CONNECTED</p>
+    <h1>Every journey starts with <span>GoRide.</span></h1>
+    <p class="hero-copy">Book bikes, autos and cars with live tracking, transparent fares and real-time driver matching.</p>
+    <button class="primary huge" onclick="bookRide()">Book a Ride</button>
+    <div class="hero-links">
+      <a href="user/register.html">Create User Account</a>
+      <a href="user/forgot-password.html">Forgot Password?</a>
+    </div>
+  </section>
+  <section class="hero-card">
+    <div class="fake-map">
+      <div class="route"></div><div class="pin p1">📍</div><div class="pin p2">🏁</div>
+      <div class="map-badge">● Live network</div>
+    </div>
+  </section>
+</main>
+<script src="js/app.js"></script>
+</body>
+</html>
