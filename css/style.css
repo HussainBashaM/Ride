@@ -1,113 +1,345 @@
 /* =====================================================
-   GORIDE
-   PURPLE + WHITE DESIGN SYSTEM
-===================================================== */
-
-
-/* =====================================================
-   VARIABLES
-===================================================== */
-
-:root {
-
-    --purple:
-        #7c3aed;
-
-    --purple-light:
-        #a855f7;
-
-    --purple-dark:
-        #5b21b6;
-
-    --purple-soft:
-        #f5eaff;
-
-    --purple-pale:
-        #faf7ff;
-
-    --text:
-        #21112f;
-
-    --text-soft:
-        #71647d;
-
-    --border:
-        #e8dff0;
-
-    --white:
-        #ffffff;
-
-    --shadow:
-        rgba(124, 58, 237, 0.12);
-
-}
-
-
-
-/* =====================================================
-   RESET
+   GORIDE STYLE.CSS
+   PURPLE + WHITE THEME
 ===================================================== */
 
 * {
-
     margin: 0;
-
     padding: 0;
-
     box-sizing: border-box;
-
 }
-
 
 html {
-
     scroll-behavior: smooth;
-
 }
-
 
 body {
-
-    font-family:
-        Georgia,
-        "Times New Roman",
-        serif;
-
-    background:
-        var(--white);
-
-    color:
-        var(--text);
-
-    min-height: 100vh;
-
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #ffffff;
+    color: #24142f;
 }
-
-
-a {
-
-    text-decoration: none;
-
-}
-
-
-button {
-
-    font-family: inherit;
-
-}
-
-
 
 /* =====================================================
-   HEADER
+   COMMON LINKS
 ===================================================== */
 
-.navbar {
+a {
+    text-decoration: none;
+}
+
+/* =====================================================
+   GORIDE BRAND
+===================================================== */
+
+.brand {
+    display: inline-block;
+
+    color: #24142f;
+
+    font-size: 32px;
+
+    font-weight: 900;
+
+    letter-spacing: -1px;
+}
+
+.brand span {
+    color: #7c3aed;
+}
+
+/* =====================================================
+   FORM PAGE
+===================================================== */
+
+.form-page {
+    min-height: 100vh;
 
     width: 100%;
 
-    height: 78px;
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 25px 15px;
+
+    background:
+        radial-gradient(
+            circle at 85% 10%,
+            rgba(168, 85, 247, 0.18),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 10% 90%,
+            rgba(124, 58, 237, 0.10),
+            transparent 30%
+        ),
+        linear-gradient(
+            135deg,
+            #ffffff 0%,
+            #fbf8ff 50%,
+            #f6edff 100%
+        );
+}
+
+/* =====================================================
+   FORM CARD
+===================================================== */
+
+.form-card {
+    width: 100%;
+
+    max-width: 430px;
+
+    padding: 38px 32px;
+
+    background: #ffffff;
+
+    border: 1px solid #e5d8ee;
+
+    border-radius: 24px;
+
+    box-shadow:
+        0 20px 60px
+        rgba(124, 58, 237, 0.14);
+
+    text-align: left;
+}
+
+/* =====================================================
+   FORM LOGO
+===================================================== */
+
+.form-card .brand {
+    display: block;
+
+    text-align: center;
+
+    margin-bottom: 25px;
+
+    font-size: 34px;
+}
+
+/* =====================================================
+   FORM HEADING
+===================================================== */
+
+.form-card h1 {
+    margin: 0 0 10px;
+
+    text-align: center;
+
+    color: #24142f;
+
+    font-size: 28px;
+
+    font-weight: 800;
+}
+
+/* =====================================================
+   MUTED TEXT
+===================================================== */
+
+.muted {
+    color: #81738c;
+}
+
+.form-card > .muted {
+    display: block;
+
+    margin-bottom: 25px;
+
+    text-align: center;
+
+    font-size: 14px;
+
+    line-height: 1.6;
+}
+
+/* =====================================================
+   LABEL
+===================================================== */
+
+.form-card label {
+    display: block;
+
+    margin-top: 16px;
+
+    margin-bottom: 7px;
+
+    color: #382342;
+
+    font-size: 14px;
+
+    font-weight: 700;
+}
+
+/* =====================================================
+   INPUT
+===================================================== */
+
+.input {
+    width: 100%;
+
+    height: 52px;
+
+    padding: 0 15px;
+
+    border: 1px solid #d9cce3;
+
+    border-radius: 12px;
+
+    outline: none;
+
+    background: #fcfaff;
+
+    color: #24142f;
+
+    font-size: 15px;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    transition: all 0.2s ease;
+}
+
+.input::placeholder {
+    color: #a297aa;
+}
+
+.input:hover {
+    border-color: #b99aca;
+}
+
+.input:focus {
+    border-color: #8b3ff0;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 0 0 4px
+        rgba(139, 63, 240, 0.10);
+}
+
+/* =====================================================
+   PRIMARY BUTTON
+===================================================== */
+
+.primary {
+    width: 100%;
+
+    min-height: 52px;
+
+    margin-top: 22px;
+
+    padding: 14px 20px;
+
+    border: none;
+
+    border-radius: 13px;
+
+    background:
+        linear-gradient(
+            110deg,
+            #a855f7,
+            #7c3aed
+        );
+
+    color: #ffffff;
+
+    font-size: 16px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 10px 25px
+        rgba(124, 58, 237, 0.23);
+
+    transition: all 0.2s ease;
+}
+
+.primary:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 15px 32px
+        rgba(124, 58, 237, 0.30);
+}
+
+.primary:active {
+    transform: translateY(0);
+}
+
+/* =====================================================
+   LINKS
+===================================================== */
+
+.link {
+    color: #7c3aed;
+
+    font-weight: 700;
+
+    transition: 0.2s;
+}
+
+.link:hover {
+    color: #5b21b6;
+
+    text-decoration: underline;
+}
+
+/* =====================================================
+   FORM PARAGRAPHS
+===================================================== */
+
+.form-card p {
+    margin-top: 17px;
+
+    text-align: center;
+
+    font-size: 14px;
+
+    line-height: 1.6;
+}
+
+/* =====================================================
+   MESSAGE
+===================================================== */
+
+#msg {
+    min-height: 20px;
+
+    color: #7c3aed;
+
+    font-weight: 700;
+}
+
+/* =====================================================
+   DASHBOARD
+===================================================== */
+
+.dashboard {
+    min-height: 100vh;
+
+    padding: 25px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ffffff,
+            #faf7ff
+        );
+}
+
+/* =====================================================
+   TOPBAR
+===================================================== */
+
+.topbar {
+    min-height: 65px;
 
     display: flex;
 
@@ -115,1624 +347,296 @@ button {
 
     justify-content: space-between;
 
-    padding:
-        0 5%;
+    padding: 0 25px;
 
-    background:
-        rgba(255,255,255,0.97);
+    margin-bottom: 25px;
 
-    border-bottom:
-        1px solid var(--border);
+    background: #ffffff;
 
-    position: relative;
+    border: 1px solid #e8dff0;
 
-    z-index: 10;
-
-}
-
-
-.logo {
-
-    font-size: 32px;
-
-    font-weight: 900;
-
-    letter-spacing: -1.5px;
-
-    color:
-        var(--text);
-
-}
-
-
-.logo span {
-
-    color:
-        var(--purple);
-
-}
-
-
-
-/* =====================================================
-   TOP NAVIGATION
-===================================================== */
-
-.top-navigation {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 10px;
-
-}
-
-
-.top-login {
-
-    padding:
-        11px 18px;
-
-    border:
-        1px solid var(--purple);
-
-    border-radius:
-        12px;
-
-    color:
-        var(--purple);
-
-    background:
-        var(--white);
-
-    font-size:
-        14px;
-
-    font-weight:
-        700;
-
-    transition:
-        0.25s;
-
-}
-
-
-.top-login:hover {
-
-    background:
-        var(--purple-soft);
-
-}
-
-
-.top-register {
-
-    padding:
-        12px 20px;
-
-    border-radius:
-        12px;
-
-    color:
-        white;
-
-    background:
-        linear-gradient(
-            110deg,
-            var(--purple-light),
-            var(--purple)
-        );
-
-    font-size:
-        14px;
-
-    font-weight:
-        700;
+    border-radius: 16px;
 
     box-shadow:
-        0 7px 20px
-        rgba(124,58,237,0.20);
-
-    transition:
-        0.25s;
-
+        0 8px 25px
+        rgba(124, 58, 237, 0.07);
 }
 
-
-.top-register:hover {
-
-    transform:
-        translateY(-2px);
-
-    box-shadow:
-        0 10px 25px
-        rgba(124,58,237,0.28);
-
+.topbar .brand {
+    font-size: 28px;
 }
-
-
 
 /* =====================================================
-   HERO
+   DASHBOARD GRID
 ===================================================== */
 
-.hero-section {
-
-    max-width:
-        1200px;
-
-    margin:
-        auto;
-
-    padding:
-        85px 5%
-        65px;
-
-    display:
-        grid;
+.dash-grid {
+    display: grid;
 
     grid-template-columns:
-        1fr 1fr;
+        1.5fr 1fr;
 
-    gap:
-        65px;
+    gap: 25px;
 
-    align-items:
-        center;
+    max-width: 1300px;
 
+    margin: auto;
 }
-
-
-
-/* =====================================================
-   HERO CONTENT
-===================================================== */
-
-.hero-label {
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    gap:
-        10px;
-
-    color:
-        var(--purple);
-
-    font-size:
-        14px;
-
-    font-weight:
-        800;
-
-    letter-spacing:
-        3px;
-
-    margin-bottom:
-        28px;
-
-}
-
-
-.label-dot {
-
-    width:
-        9px;
-
-    height:
-        9px;
-
-    background:
-        var(--purple);
-
-    border-radius:
-        50%;
-
-    box-shadow:
-        0 0 12px
-        rgba(124,58,237,0.45);
-
-}
-
-
-.hero-content h1 {
-
-    font-size:
-        clamp(45px, 5vw, 68px);
-
-    line-height:
-        1.02;
-
-    letter-spacing:
-        -2px;
-
-    font-weight:
-        800;
-
-    color:
-        var(--text);
-
-}
-
-
-.hero-content h1 span {
-
-    color:
-        var(--purple);
-
-}
-
-
-.hero-description {
-
-    max-width:
-        620px;
-
-    margin-top:
-        28px;
-
-    color:
-        var(--text-soft);
-
-    font-size:
-        18px;
-
-    line-height:
-        1.8;
-
-}
-
-
-
-/* =====================================================
-   BOOK RIDE BUTTON
-===================================================== */
-
-.book-ride-button {
-
-    width:
-        100%;
-
-    max-width:
-        620px;
-
-    margin-top:
-        32px;
-
-    padding:
-        20px 25px;
-
-    border:
-        none;
-
-    border-radius:
-        18px;
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    justify-content:
-        center;
-
-    gap:
-        25px;
-
-    color:
-        white;
-
-    background:
-        linear-gradient(
-            110deg,
-            #a855f7,
-            #7c3aed
-        );
-
-    font-size:
-        20px;
-
-    font-weight:
-        800;
-
-    cursor:
-        pointer;
-
-    box-shadow:
-        0 16px 35px
-        rgba(124,58,237,0.25);
-
-    transition:
-        0.25s;
-
-}
-
-
-.book-ride-button:hover {
-
-    transform:
-        translateY(-3px);
-
-    box-shadow:
-        0 20px 42px
-        rgba(124,58,237,0.34);
-
-}
-
-
-.button-arrow {
-
-    font-size:
-        25px;
-
-}
-
-
-
-/* =====================================================
-   CREATE ACCOUNT
-===================================================== */
-
-.user-create {
-
-    margin-top:
-        22px;
-
-    display:
-        flex;
-
-    gap:
-        8px;
-
-    align-items:
-        center;
-
-    font-size:
-        15px;
-
-    color:
-        var(--text-soft);
-
-}
-
-
-.user-create a {
-
-    color:
-        var(--purple);
-
-    font-weight:
-        800;
-
-}
-
-
-.user-create a:hover {
-
-    text-decoration:
-        underline;
-
-}
-
-
 
 /* =====================================================
    MAP
 ===================================================== */
 
-.map-wrapper {
+.map {
+    min-height: 600px;
 
-    width:
-        100%;
+    position: relative;
 
-}
+    overflow: hidden;
 
+    border-radius: 22px;
 
-.map-card {
+    border: 1px solid #e2d7e9;
 
-    height:
-        440px;
-
-    position:
-        relative;
-
-    overflow:
-        hidden;
-
-    border:
-        1px solid
-        var(--border);
-
-    border-radius:
-        28px;
-
-    background-color:
-        #faf8fd;
+    background-color: #faf8fd;
 
     background-image:
-
         linear-gradient(
-            #ddd2e7 1px,
+            #ddd3e5 1px,
             transparent 1px
         ),
-
         linear-gradient(
             90deg,
-            #ddd2e7 1px,
+            #ddd3e5 1px,
             transparent 1px
         );
 
-    background-size:
-        70px 70px;
+    background-size: 70px 70px;
 
     box-shadow:
-        0 25px 65px
-        rgba(124,58,237,0.12);
-
+        0 15px 40px
+        rgba(124, 58, 237, 0.10);
 }
 
+.map-badge {
+    position: absolute;
 
+    top: 20px;
 
-/* =====================================================
-   MAP STATUS
-===================================================== */
+    left: 20px;
 
-.map-status {
+    padding: 12px 17px;
 
-    position:
-        absolute;
+    border-radius: 12px;
 
-    top:
-        24px;
+    background: #ffffff;
 
-    left:
-        24px;
+    color: #7c3aed;
 
-    z-index:
-        5;
+    font-size: 13px;
 
-    padding:
-        13px 19px;
-
-    background:
-        white;
-
-    border-radius:
-        13px;
-
-    color:
-        var(--purple-dark);
-
-    font-size:
-        14px;
-
-    font-weight:
-        800;
-
-    box-shadow:
-        0 8px 25px
-        rgba(124,58,237,0.13);
-
-}
-
-
-.status-dot {
-
-    width:
-        11px;
-
-    height:
-        11px;
-
-    display:
-        inline-block;
-
-    margin-right:
-        7px;
-
-    background:
-        var(--purple);
-
-    border-radius:
-        50%;
-
-}
-
-
-
-/* =====================================================
-   MAP ROADS
-===================================================== */
-
-.map-road {
-
-    position:
-        absolute;
-
-    height:
-        10px;
-
-    background:
-        rgba(255,255,255,0.95);
-
-    box-shadow:
-        0 0 0 1px
-        #ded4e8;
-
-}
-
-
-.road-one {
-
-    width:
-        120%;
-
-    top:
-        30%;
-
-    left:
-        -10%;
-
-    transform:
-        rotate(12deg);
-
-}
-
-
-.road-two {
-
-    width:
-        120%;
-
-    top:
-        58%;
-
-    left:
-        -10%;
-
-    transform:
-        rotate(-18deg);
-
-}
-
-
-.road-three {
-
-    width:
-        100%;
-
-    top:
-        78%;
-
-    left:
-        5%;
-
-    transform:
-        rotate(5deg);
-
-}
-
-
-
-/* =====================================================
-   ROUTE
-===================================================== */
-
-.route {
-
-    position:
-        absolute;
-
-    width:
-        62%;
-
-    height:
-        7px;
-
-    left:
-        19%;
-
-    top:
-        59%;
-
-    border-radius:
-        20px;
-
-    background:
-        linear-gradient(
-            90deg,
-            #b24cff,
-            #762cf0
-        );
-
-    transform:
-        rotate(-25deg);
-
-    box-shadow:
-        0 0 25px
-        rgba(139,63,240,0.5);
-
-}
-
-
-
-/* =====================================================
-   PICKUP MARKER
-===================================================== */
-
-.pickup {
-
-    position:
-        absolute;
-
-    left:
-        20%;
-
-    top:
-        65%;
-
-    width:
-        27px;
-
-    height:
-        27px;
-
-    border:
-        4px solid white;
-
-    border-radius:
-        50%;
-
-    background:
-        #ff634d;
-
-    box-shadow:
-        0 5px 15px
-        rgba(0,0,0,0.20);
-
-}
-
-
-.pickup span {
-
-    position:
-        absolute;
-
-    width:
-        8px;
-
-    height:
-        8px;
-
-    top:
-        6px;
-
-    left:
-        6px;
-
-    border-radius:
-        50%;
-
-    background:
-        white;
-
-}
-
-
-
-/* =====================================================
-   DESTINATION
-===================================================== */
-
-.destination-marker {
-
-    position:
-        absolute;
-
-    right:
-        17%;
-
-    top:
-        28%;
-
-    font-size:
-        42px;
-
-    filter:
-        drop-shadow(
-            0 5px 5px
-            rgba(0,0,0,0.15)
-        );
-
-}
-
-
-
-/* =====================================================
-   DRIVER MARKER
-===================================================== */
-
-.driver-marker {
-
-    position:
-        absolute;
-
-    right:
-        31%;
-
-    top:
-        46%;
-
-    width:
-        46px;
-
-    height:
-        46px;
-
-    display:
-        grid;
-
-    place-items:
-        center;
-
-    background:
-        white;
-
-    border:
-        2px solid
-        var(--purple-light);
-
-    border-radius:
-        50%;
-
-    font-size:
-        22px;
+    font-weight: 700;
 
     box-shadow:
         0 7px 20px
-        rgba(124,58,237,0.20);
-
+        rgba(124, 58, 237, 0.12);
 }
 
-
-
 /* =====================================================
-   MAP LABELS
+   PANEL
 ===================================================== */
 
-.map-label {
+.panel {
+    padding: 28px;
 
-    position:
-        absolute;
+    background: #ffffff;
 
-    padding:
-        7px 12px;
+    border: 1px solid #e6d9ef;
 
-    background:
-        white;
-
-    border-radius:
-        8px;
-
-    font-size:
-        12px;
-
-    font-weight:
-        700;
-
-    color:
-        var(--text-soft);
+    border-radius: 20px;
 
     box-shadow:
-        0 4px 15px
-        rgba(0,0,0,0.08);
-
+        0 15px 40px
+        rgba(124, 58, 237, 0.09);
 }
 
+.panel h2 {
+    margin-bottom: 10px;
 
-.pickup-label {
-
-    left:
-        14%;
-
-    top:
-        75%;
-
+    color: #24142f;
 }
 
+.panel h3 {
+    margin-top: 25px;
 
-.destination-label {
+    margin-bottom: 12px;
 
-    right:
-        10%;
-
-    top:
-        22%;
-
+    color: #382342;
 }
-
-
 
 /* =====================================================
-   MAP INFO
+   STAT
 ===================================================== */
 
-.map-info {
+.stat {
+    display: flex;
 
-    margin-top:
-        14px;
+    align-items: center;
 
-    padding:
-        15px 18px;
+    justify-content: space-between;
 
-    display:
-        flex;
+    padding: 15px 0;
 
-    justify-content:
-        space-between;
-
-    align-items:
-        center;
-
-    background:
-        white;
-
-    border:
-        1px solid
-        var(--border);
-
-    border-radius:
-        15px;
-
+    border-bottom:
+        1px solid #eee7f3;
 }
 
+.stat span {
+    color: #81738c;
 
-.map-info strong {
-
-    display:
-        block;
-
-    font-size:
-        14px;
-
+    font-size: 14px;
 }
 
-
-.map-info small {
-
-    display:
-        block;
-
-    margin-top:
-        3px;
-
-    color:
-        var(--text-soft);
-
+.stat b {
+    color: #7c3aed;
 }
-
-
-.map-info-icon {
-
-    padding:
-        8px 12px;
-
-    border-radius:
-        8px;
-
-    color:
-        var(--purple);
-
-    background:
-        var(--purple-soft);
-
-    font-size:
-        12px;
-
-    font-weight:
-        800;
-
-}
-
-
 
 /* =====================================================
-   FEATURES
+   VEHICLE
 ===================================================== */
 
-.features-section {
-
-    max-width:
-        1100px;
-
-    margin:
-        0 auto;
-
-    padding:
-        10px 5%
-        60px;
-
-    display:
-        grid;
+.vehicle {
+    display: grid;
 
     grid-template-columns:
-        repeat(3,1fr);
+        repeat(3, 1fr);
 
-    gap:
-        18px;
-
+    gap: 10px;
 }
 
+.vehicle button {
+    padding: 15px 8px;
 
-.feature {
+    border: 1px solid #e0d4e9;
 
-    display:
-        flex;
+    border-radius: 12px;
 
-    align-items:
-        center;
+    background: #ffffff;
 
-    gap:
-        13px;
+    color: #382342;
 
-    padding:
-        18px;
+    cursor: pointer;
 
-    background:
-        white;
-
-    border:
-        1px solid
-        var(--border);
-
-    border-radius:
-        15px;
-
-    box-shadow:
-        0 8px 25px
-        rgba(124,58,237,0.06);
-
+    font-weight: 700;
 }
 
+.vehicle button:hover,
+.vehicle button.active {
+    color: #7c3aed;
 
-.feature-icon {
+    border-color: #9b59ed;
 
-    width:
-        45px;
-
-    height:
-        45px;
-
-    display:
-        grid;
-
-    place-items:
-        center;
-
-    flex-shrink:
-        0;
-
-    border-radius:
-        12px;
-
-    color:
-        white;
-
-    background:
-        linear-gradient(
-            135deg,
-            #a855f7,
-            #7c3aed
-        );
-
-    font-size:
-        19px;
-
+    background: #f6edff;
 }
-
-
-.feature strong {
-
-    display:
-        block;
-
-    font-size:
-        14px;
-
-}
-
-
-.feature small {
-
-    display:
-        block;
-
-    margin-top:
-        4px;
-
-    color:
-        var(--text-soft);
-
-}
-
-
 
 /* =====================================================
-   DRIVER SECTION
+   FULL BUTTON
 ===================================================== */
 
-.driver-section {
-
-    padding:
-        75px 5%
-        80px;
-
-    background:
-        linear-gradient(
-            180deg,
-            #ffffff,
-            #faf7ff
-        );
-
-    border-top:
-        1px solid
-        var(--border);
-
+.full {
+    width: 100%;
 }
-
-
-.driver-heading {
-
-    text-align:
-        center;
-
-    max-width:
-        650px;
-
-    margin:
-        0 auto 35px;
-
-}
-
-
-.driver-label {
-
-    color:
-        var(--purple);
-
-    font-size:
-        13px;
-
-    font-weight:
-        800;
-
-    letter-spacing:
-        3px;
-
-}
-
-
-.driver-heading h2 {
-
-    margin:
-        10px 0;
-
-    font-size:
-        38px;
-
-}
-
-
-.driver-heading h2 span {
-
-    color:
-        var(--purple);
-
-}
-
-
-.driver-heading p {
-
-    color:
-        var(--text-soft);
-
-    line-height:
-        1.7;
-
-}
-
-
 
 /* =====================================================
-   DRIVER OPTIONS
+   LIVE STATUS
 ===================================================== */
 
-.driver-options {
+.status {
+    color: #7c3aed;
 
-    max-width:
-        900px;
+    font-weight: 800;
 
-    margin:
-        auto;
-
-    display:
-        grid;
-
-    grid-template-columns:
-        1fr 1fr;
-
-    gap:
-        20px;
-
+    font-size: 13px;
 }
-
-
-.driver-option {
-
-    display:
-        grid;
-
-    grid-template-columns:
-        55px 1fr 25px;
-
-    align-items:
-        center;
-
-    gap:
-        16px;
-
-    padding:
-        20px;
-
-    border:
-        1px solid
-        var(--border);
-
-    border-radius:
-        18px;
-
-    background:
-        white;
-
-    box-shadow:
-        0 10px 30px
-        rgba(124,58,237,0.07);
-
-    transition:
-        0.25s;
-
-}
-
-
-.driver-option:hover {
-
-    transform:
-        translateY(-4px);
-
-    border-color:
-        var(--purple-light);
-
-    box-shadow:
-        0 18px 38px
-        rgba(124,58,237,0.14);
-
-}
-
-
-.driver-option-icon {
-
-    width:
-        55px;
-
-    height:
-        55px;
-
-    display:
-        grid;
-
-    place-items:
-        center;
-
-    border-radius:
-        15px;
-
-    color:
-        white;
-
-    background:
-        linear-gradient(
-            135deg,
-            #a855f7,
-            #7c3aed
-        );
-
-    font-size:
-        24px;
-
-}
-
-
-.driver-option-content strong {
-
-    display:
-        block;
-
-    color:
-        var(--text);
-
-    font-size:
-        17px;
-
-}
-
-
-.driver-option-content span {
-
-    display:
-        block;
-
-    margin-top:
-        5px;
-
-    color:
-        #887995;
-
-    font-size:
-        13px;
-
-}
-
-
-.driver-arrow {
-
-    color:
-        var(--purple);
-
-    font-size:
-        24px;
-
-}
-
-
-
-/* =====================================================
-   FOOTER
-===================================================== */
-
-.footer {
-
-    min-height:
-        70px;
-
-    padding:
-        20px 5%;
-
-    display:
-        flex;
-
-    justify-content:
-        space-between;
-
-    align-items:
-        center;
-
-    gap:
-        20px;
-
-    flex-wrap:
-        wrap;
-
-    border-top:
-        1px solid
-        var(--border);
-
-    background:
-        #faf7fd;
-
-}
-
-
-.footer-logo {
-
-    font-size:
-        21px;
-
-    font-weight:
-        900;
-
-}
-
-
-.footer-logo span {
-
-    color:
-        var(--purple);
-
-}
-
-
-.footer-items {
-
-    display:
-        flex;
-
-    gap:
-        25px;
-
-    flex-wrap:
-        wrap;
-
-    color:
-        var(--text-soft);
-
-    font-size:
-        12px;
-
-}
-
-
 
 /* =====================================================
    MOBILE
 ===================================================== */
 
-@media (max-width: 850px) {
+@media (max-width: 800px) {
 
+    .form-page {
+        padding: 18px 12px;
+    }
 
-    .navbar {
-
-        height:
-            72px;
+    .form-card {
+        max-width: 100%;
 
         padding:
-            0 25px;
+            32px 22px;
 
+        border-radius: 20px;
     }
 
-
-    .logo {
-
-        font-size:
-            29px;
-
+    .form-card .brand {
+        font-size: 31px;
     }
 
-
-    .top-login {
-
-        display:
-            none;
-
+    .form-card h1 {
+        font-size: 25px;
     }
 
-
-    .top-register {
-
-        padding:
-            10px 15px;
-
+    .input {
+        height: 50px;
     }
 
-
-    .hero-section {
-
-        display:
-            block;
-
-        padding:
-            60px 25px
-            40px;
-
+    .primary {
+        min-height: 50px;
     }
 
-
-    .hero-label {
-
-        font-size:
-            12px;
-
-        letter-spacing:
-            2px;
-
+    .dashboard {
+        padding: 12px;
     }
 
-
-    .hero-content h1 {
-
-        font-size:
-            48px;
-
-        letter-spacing:
-            -1.5px;
-
+    .topbar {
+        padding: 0 15px;
     }
 
-
-    .hero-description {
-
-        font-size:
-            17px;
-
-        line-height:
-            1.75;
-
+    .topbar .brand {
+        font-size: 25px;
     }
 
-
-    .book-ride-button {
-
-        font-size:
-            19px;
-
-        padding:
-            19px;
-
+    .dash-grid {
+        grid-template-columns: 1fr;
     }
 
-
-    .map-wrapper {
-
-        margin-top:
-            50px;
-
-    }
-
-
-    .map-card {
-
-        height:
-            400px;
-
-        border-radius:
-            22px;
-
-    }
-
-
-    .features-section {
-
-        grid-template-columns:
-            1fr;
-
-        padding:
-            10px 25px
-            50px;
-
-    }
-
-
-    .driver-section {
-
-        padding:
-            60px 25px
-            65px;
-
-    }
-
-
-    .driver-heading h2 {
-
-        font-size:
-            30px;
-
-    }
-
-
-    .driver-options {
-
-        grid-template-columns:
-            1fr;
-
-    }
-
-
-    .footer {
-
-        padding:
-            25px;
-
-    }
-
-
-    .footer-items {
-
-        gap:
-            12px 20px;
-
+    .map {
+        min-height: 400px;
     }
 
 }
 
+@media (max-width: 420px) {
 
-
-/* =====================================================
-   SMALL PHONES
-===================================================== */
-
-@media (max-width: 480px) {
-
-
-    .hero-content h1 {
-
-        font-size:
-            43px;
-
-    }
-
-
-    .hero-description {
-
-        font-size:
-            16px;
-
-    }
-
-
-    .user-create {
-
-        flex-direction:
-            column;
-
-        align-items:
-            flex-start;
-
-    }
-
-
-    .map-card {
-
-        height:
-            360px;
-
-    }
-
-
-    .map-status {
-
-        top:
-            18px;
-
-        left:
-            18px;
-
+    .form-card {
         padding:
-            11px 14px;
-
+            28px 18px;
     }
 
-
-    .destination-marker {
-
-        right:
-            10%;
-
+    .form-card h1 {
+        font-size: 23px;
     }
 
-
-    .driver-option {
-
-        grid-template-columns:
-            50px 1fr 20px;
-
-        padding:
-            16px;
-
+    .form-card .brand {
+        font-size: 29px;
     }
 
-
-    .driver-option-icon {
-
-        width:
-            50px;
-
-        height:
-            50px;
-
+    .vehicle {
+        gap: 6px;
     }
 
-        }
+    .vehicle button {
+        font-size: 13px;
+    }
+
+       }
