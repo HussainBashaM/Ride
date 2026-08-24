@@ -1,1 +1,126 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Driver Dashboard — GoRide</title><link rel="stylesheet" href="../css/style.css"></head><body><div class="dashboard"><div class="topbar"><a class="brand" href="../index.html">Go<span>Ride</span></a><div><span id="onlineState" class="muted">OFFLINE</span> <button class="primary" onclick="setOnline()">Toggle Online</button></div></div><div class="dash-grid"><div id="map" class="map"><div class="map-badge">● Driver live map</div></div><section class="panel"><h2>Incoming Rides</h2><div id="requests"><p class="muted">Waiting for nearby ride requests...</p></div></section></div></div><script src="https://cdn.socket.io/4.8.0/socket.io.min.js"></script><script src="../js/app.js"></script><script src="../js/driver.js"></script><script src="../js/map.js"></script><script>if(typeof io==="function"){const s=io();s.on("ride:new",r=>{requests.innerHTML=`<div class="panel"><b>New ride request</b><p>${r.pickup?.name||"Pickup"} → ${r.destination?.name||"Destination"}</p><p>₹${r.fare} · ${r.distance} km</p><button class="primary" onclick="acceptRide('${r._id}')">Accept</button> <button onclick="this.parentElement.remove()">Skip</button></div>`})}</script></body></html>
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Driver Dashboard — GoRide</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+    <div class="dashboard">
+
+        <!-- Top Bar -->
+        <div class="topbar">
+
+            <a class="brand" href="../index.html">
+                Go<span>Ride</span>
+            </a>
+
+            <div>
+                <span id="onlineState" class="muted">
+                    OFFLINE
+                </span>
+
+                <button
+                    type="button"
+                    class="primary"
+                    onclick="setOnline()">
+                    Toggle Online
+                </button>
+            </div>
+
+        </div>
+
+        <!-- Driver Dashboard -->
+        <div class="dash-grid">
+
+            <!-- Live Driver Map -->
+            <div id="map" class="map">
+                <div class="map-badge">
+                    ● Driver live map
+                </div>
+            </div>
+
+            <!-- Incoming Rides -->
+            <section class="panel">
+
+                <h2>Incoming Rides</h2>
+
+                <div id="requests">
+                    <p class="muted">
+                        Waiting for nearby ride requests...
+                    </p>
+                </div>
+
+            </section>
+
+        </div>
+
+    </div>
+
+    <!-- Socket.IO -->
+    <script src="https://cdn.socket.io/4.8.0/socket.io.min.js"></script>
+
+    <!-- GoRide JavaScript -->
+    <script src="../js/app.js"></script>
+    <script src="../js/map.js"></script>
+    <script src="../js/driver.js"></script>
+
+    <!-- Live Ride Requests -->
+    <script>
+        const requests =
+            document.getElementById("requests");
+
+        if (typeof io === "function") {
+
+            const socket = io();
+
+            socket.on("ride:new", (r) => {
+
+                const rideCard =
+                    document.createElement("div");
+
+                rideCard.className = "panel";
+
+                rideCard.innerHTML = `
+                    <b>New ride request</b>
+
+                    <p>
+                        ${r.pickup?.name || "Pickup"}
+                        →
+                        ${r.destination?.name || "Destination"}
+                    </p>
+
+                    <p>
+                        ₹${r.fare || "—"}
+                        ·
+                        ${r.distance || "—"} km
+                    </p>
+
+                    <button
+                        type="button"
+                        class="primary"
+                        onclick="acceptRide('${r._id}')">
+                        Accept
+                    </button>
+
+                    <button
+                        type="button"
+                        onclick="this.parentElement.remove()">
+                        Skip
+                    </button>
+                `;
+
+                requests.appendChild(rideCard);
+            });
+        }
+    </script>
+
+</body>
+
+</html>
