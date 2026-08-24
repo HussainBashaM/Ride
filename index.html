@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -11,7 +11,10 @@
 
     <title>GoRide — Ride Your Way</title>
 
-    <link rel="stylesheet" href="css/style.css">
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
 </head>
 
 <body>
@@ -20,98 +23,183 @@
 
     <header class="hero-header">
 
-        <a class="brand" href="index.html">
+        <a
+            href="index.html"
+            class="brand"
+        >
             Go<span>Ride</span>
         </a>
 
-        <div class="header-actions">
+        <nav class="header-actions">
 
             <a
-                class="header-btn"
                 href="user/login.html"
+                class="header-btn"
             >
                 User Login
             </a>
 
             <a
+                href="user/register.html"
                 class="header-btn"
-                href="driver/register.html"
             >
-                Become a Driver
+                Register
             </a>
 
-        </div>
+        </nav>
 
     </header>
 
 
-    <!-- ================= HERO ================= -->
+    <!-- ================= MAIN ================= -->
 
-    <main class="hero">
-
-        <div class="hero-content">
-
-            <p class="hero-tag">
-                SMART • FAST • CONNECTED
-            </p>
-
-            <h1 class="hero-title">
-                Every journey starts<br>
-                with <span>GoRide.</span>
-            </h1>
-
-            <p class="hero-description">
-                Book bikes, autos and cars with live tracking,
-                transparent fares and real-time driver matching.
-            </p>
+    <main>
 
 
-            <!-- BOOK RIDE -->
+        <!-- ================= HERO ================= -->
 
-            <a
-                class="book-btn"
-                href="user/login.html"
-                onclick="bookRide(event)"
-            >
-                Book a Ride →
-            </a>
+        <section class="hero">
+
+            <div class="hero-content">
+
+                <div class="hero-tag">
+                    SMART • FAST • CONNECTED
+                </div>
+
+                <h1 class="hero-title">
+
+                    Every journey starts
+                    <br>
+
+                    with
+                    <span>GoRide.</span>
+
+                </h1>
+
+                <p class="hero-description">
+
+                    Book bikes, autos and cars with live tracking,
+                    transparent fares and real-time driver matching.
+
+                </p>
 
 
-            <!-- USER OPTIONS -->
+                <!-- BOOK RIDE -->
 
-            <div class="user-links">
-
-                <a href="user/register.html">
-                    Create User Account
+                <a
+                    href="user/login.html"
+                    class="book-btn"
+                    onclick="bookRide(event)"
+                >
+                    Book a Ride
+                    <span>→</span>
                 </a>
 
-                <a href="user/login.html">
-                    User Login
-                </a>
+
+                <!-- USER LINKS -->
+
+                <div class="user-links">
+
+                    <span>
+                        New to GoRide?
+                    </span>
+
+                    <a href="user/register.html">
+                        Create User Account
+                    </a>
+
+                </div>
 
             </div>
 
-        </div>
 
+            <!-- ================= MAP PREVIEW ================= -->
 
-        <!-- ================= MAP PREVIEW ================= -->
+            <div class="map-preview">
 
-        <section class="map-preview">
+                <div class="map-label">
+                    <span class="live-dot"></span>
+                    Live network
+                </div>
 
-            <div class="map-label">
-                🟣 Live network
+                <div class="map-route"></div>
+
+                <div class="pickup-marker">
+                    📍
+                </div>
+
+                <div class="destination-marker">
+                    🏁
+                </div>
+
+                <div class="map-car">
+                    🚗
+                </div>
+
+                <div class="map-location pickup-text">
+                    Pickup
+                </div>
+
+                <div class="map-location destination-text">
+                    Destination
+                </div>
+
             </div>
+
 
         </section>
 
 
+
         <!-- ================= FEATURES ================= -->
 
-        <section class="feature-grid">
+        <section class="features-section">
 
             <div class="feature-card">
 
-                <h3>🚗 Real-time Tracking</h3>
+                <div class="feature-icon">
+                    ⚡
+                </div>
+
+                <h3>
+                    Fast Booking
+                </h3>
+
+                <p>
+                    Get a ride quickly with simple
+                    and easy booking.
+                </p>
+
+            </div>
+
+
+            <div class="feature-card">
+
+                <div class="feature-icon">
+                    📍
+                </div>
+
+                <h3>
+                    Live Tracking
+                </h3>
+
+                <p>
+                    Track your driver and ride status
+                    in real time.
+                </p>
+
+            </div>
+
+
+            <div class="feature-card">
+
+                <div class="feature-icon">
+                    🚗
+                </div>
+
+                <h3>
+                    Real-time Tracking
+                </h3>
 
                 <p>
                     Follow your ride live with
@@ -123,644 +211,155 @@
 
             <div class="feature-card">
 
-                <h3>⚡ Fast Booking</h3>
+                <div class="feature-icon">
+                    ₹
+                </div>
+
+                <h3>
+                    Transparent Fare
+                </h3>
 
                 <p>
-                    Get a ride quickly with
-                    simple and easy booking.
-                </p>
-
-            </div>
-
-
-            <div class="feature-card">
-
-                <h3>📍 Live Tracking</h3>
-
-                <p>
-                    Track your driver and
-                    ride status in real time.
-                </p>
-
-            </div>
-
-
-            <div class="feature-card">
-
-                <h3>₹ Transparent Fare</h3>
-
-                <p>
-                    Know your estimated fare
-                    before confirming the ride.
+                    Know your estimated fare before
+                    confirming your ride.
                 </p>
 
             </div>
 
         </section>
+
 
 
         <!-- ================= DRIVER SECTION ================= -->
 
         <section class="driver-section">
 
-            <p class="hero-tag">
-                DRIVE WITH GORIDE
-            </p>
+            <div class="driver-content">
 
-            <h2>
-                Want to earn with GoRide?
-            </h2>
+                <div class="driver-label">
+                    DRIVE WITH GORIDE
+                </div>
 
-            <p>
-                Join our driver network, accept nearby
-                rides and earn on your own schedule.
-            </p>
+                <h2>
+                    Want to earn with
+                    <span>GoRide?</span>
+                </h2>
+
+                <p>
+                    Join our driver network, accept nearby
+                    rides and earn on your own schedule.
+                </p>
+
+            </div>
 
 
-            <div class="driver-actions">
+            <div class="driver-options">
+
+
+                <!-- BECOME DRIVER -->
 
                 <a
-                    class="driver-btn primary"
                     href="driver/register.html"
+                    class="driver-option"
                 >
-                    🚗 Become a Driver
+
+                    <div class="driver-icon">
+                        🚗
+                    </div>
+
+                    <div class="driver-text">
+
+                        <strong>
+                            Become a Driver
+                        </strong>
+
+                        <span>
+                            Register and start earning
+                        </span>
+
+                    </div>
+
+                    <div class="driver-arrow">
+                        →
+                    </div>
+
                 </a>
 
+
+                <!-- DRIVER LOGIN -->
+
                 <a
-                    class="driver-btn"
                     href="driver/login.html"
+                    class="driver-option"
                 >
-                    🔑 Driver Login
+
+                    <div class="driver-icon">
+                        🔑
+                    </div>
+
+                    <div class="driver-text">
+
+                        <strong>
+                            Driver Login
+                        </strong>
+
+                        <span>
+                            Login to your driver account
+                        </span>
+
+                    </div>
+
+                    <div class="driver-arrow">
+                        →
+                    </div>
+
                 </a>
+
 
             </div>
 
         </section>
 
+
     </main>
+
 
 
     <!-- ================= FOOTER ================= -->
 
-    <footer>
+    <footer class="footer">
 
-        <div class="brand">
+        <div class="footer-logo">
             Go<span>Ride</span>
         </div>
 
-        <p>
-            Safe & Secure • Affordable Rides •
-            Live Tracking • 24/7 Support
-        </p>
+        <div class="footer-items">
+
+            <span>
+                Safe & Secure
+            </span>
+
+            <span>
+                Affordable Rides
+            </span>
+
+            <span>
+                Live Tracking
+            </span>
+
+            <span>
+                24/7 Support
+            </span>
+
+        </div>
 
     </footer>
+
 
 
     <!-- ================= JAVASCRIPT ================= -->
 
     <script src="js/app.js"></script>
-
-</body>
-
-</html>
-
-<!-- =====================================================
-     HEADER
-===================================================== -->
-
-<header class="navbar">
-
-    <a
-        href="index.html"
-        class="logo">
-
-        Go<span>Ride</span>
-
-    </a>
-
-
-    <nav class="top-navigation">
-
-        <a
-            href="user/login.html"
-            class="top-login">
-
-            User Login
-
-        </a>
-
-
-        <a
-            href="user/register.html"
-            class="top-register">
-
-            Register
-
-        </a>
-
-    </nav>
-
-</header>
-
-
-
-<!-- =====================================================
-     HERO SECTION
-===================================================== -->
-
-<main>
-
-
-<section class="hero-section">
-
-
-    <!-- LEFT SIDE -->
-
-    <div class="hero-content">
-
-
-        <div class="hero-label">
-
-            <span class="label-dot"></span>
-
-            SMART • FAST • CONNECTED
-
-        </div>
-
-
-        <h1>
-
-            Every journey starts
-
-            <br>
-
-            with
-            <span>GoRide.</span>
-
-        </h1>
-
-
-        <p class="hero-description">
-
-            Book bikes, autos and cars with live tracking,
-            transparent fares and real-time driver matching.
-
-        </p>
-
-
-
-        <!-- BOOK RIDE -->
-
-        <button
-            class="book-ride-button"
-            onclick="handleBookRide()">
-
-            <span>
-                Book a Ride
-            </span>
-
-            <span class="button-arrow">
-                →
-            </span>
-
-        </button>
-
-
-
-        <!-- USER REGISTER -->
-
-        <div class="user-create">
-
-            <span>
-                New to GoRide?
-            </span>
-
-            <a
-                href="user/register.html">
-
-                Create User Account
-
-            </a>
-
-        </div>
-
-
-    </div>
-
-
-
-    <!-- RIGHT / MAP -->
-
-    <div class="map-wrapper">
-
-
-        <div class="map-card">
-
-
-            <!-- MAP TOP BADGE -->
-
-            <div class="map-status">
-
-                <span class="status-dot"></span>
-
-                Live network
-
-            </div>
-
-
-
-            <!-- MAP ROAD LINES -->
-
-            <div class="map-road road-one"></div>
-
-            <div class="map-road road-two"></div>
-
-            <div class="map-road road-three"></div>
-
-
-
-            <!-- ROUTE -->
-
-            <div class="route">
-
-            </div>
-
-
-
-            <!-- PICKUP -->
-
-            <div class="map-marker pickup">
-
-                <span></span>
-
-            </div>
-
-
-
-            <!-- DESTINATION -->
-
-            <div class="destination-marker">
-
-                🏁
-
-            </div>
-
-
-
-            <!-- DRIVER -->
-
-            <div class="driver-marker">
-
-                🚗
-
-            </div>
-
-
-
-            <!-- MAP LABEL -->
-
-            <div class="map-label pickup-label">
-
-                Pickup
-
-            </div>
-
-
-            <div class="map-label destination-label">
-
-                Destination
-
-            </div>
-
-
-        </div>
-
-
-        <!-- MAP INFO -->
-
-        <div class="map-info">
-
-
-            <div>
-
-                <strong>
-                    Real-time tracking
-                </strong>
-
-                <small>
-                    Follow your ride live
-                </small>
-
-            </div>
-
-
-            <div class="map-info-icon">
-
-                GPS
-
-            </div>
-
-
-        </div>
-
-
-    </div>
-
-
-</section>
-
-
-
-<!-- =====================================================
-     QUICK FEATURES
-===================================================== -->
-
-<section class="features-section">
-
-
-    <div class="feature">
-
-        <div class="feature-icon">
-            ⚡
-        </div>
-
-        <div>
-
-            <strong>
-                Fast Booking
-            </strong>
-
-            <small>
-                Get a ride in seconds
-            </small>
-
-        </div>
-
-    </div>
-
-
-
-    <div class="feature">
-
-        <div class="feature-icon">
-            📍
-        </div>
-
-        <div>
-
-            <strong>
-                Live Tracking
-            </strong>
-
-            <small>
-                Track your driver
-            </small>
-
-        </div>
-
-    </div>
-
-
-
-    <div class="feature">
-
-        <div class="feature-icon">
-            ₹
-        </div>
-
-        <div>
-
-            <strong>
-                Transparent Fare
-            </strong>
-
-            <small>
-                Know the price before booking
-            </small>
-
-        </div>
-
-    </div>
-
-
-</section>
-
-
-
-<!-- =====================================================
-     DRIVER SECTION
-===================================================== -->
-
-<section class="driver-section">
-
-
-    <div class="driver-heading">
-
-
-        <div class="driver-label">
-
-            DRIVE WITH GORIDE
-
-        </div>
-
-
-        <h2>
-
-            Want to earn with
-
-            <span>GoRide?</span>
-
-        </h2>
-
-
-        <p>
-
-            Join our driver network, accept nearby rides
-            and earn on your own schedule.
-
-        </p>
-
-
-    </div>
-
-
-
-    <div class="driver-options">
-
-
-        <!-- BECOME DRIVER -->
-
-        <a
-            href="driver/register.html"
-            class="driver-option">
-
-
-            <div class="driver-option-icon">
-
-                🚗
-
-            </div>
-
-
-            <div class="driver-option-content">
-
-                <strong>
-
-                    Become a Driver
-
-                </strong>
-
-
-                <span>
-
-                    Register and start earning
-
-                </span>
-
-            </div>
-
-
-            <div class="driver-arrow">
-
-                →
-
-            </div>
-
-
-        </a>
-
-
-
-        <!-- DRIVER LOGIN -->
-
-        <a
-            href="driver/login.html"
-            class="driver-option">
-
-
-            <div class="driver-option-icon">
-
-                🔑
-
-            </div>
-
-
-            <div class="driver-option-content">
-
-                <strong>
-
-                    Driver Login
-
-                </strong>
-
-
-                <span>
-
-                    Login to your driver account
-
-                </span>
-
-            </div>
-
-
-            <div class="driver-arrow">
-
-                →
-
-            </div>
-
-
-        </a>
-
-
-    </div>
-
-
-</section>
-
-
-
-<!-- =====================================================
-     FOOTER
-===================================================== -->
-
-<footer class="footer">
-
-
-    <div class="footer-logo">
-
-        Go<span>Ride</span>
-
-    </div>
-
-
-    <div class="footer-items">
-
-        <span>
-            Safe & Secure
-        </span>
-
-        <span>
-            Affordable Rides
-        </span>
-
-        <span>
-            Live Tracking
-        </span>
-
-        <span>
-            24/7 Support
-        </span>
-
-    </div>
-
-
-</footer>
-
-
-</main>
-
-
-
-<!-- =====================================================
-     JAVASCRIPT
-===================================================== -->
-
-<script>
-
-function handleBookRide() {
-
-
-    const token =
-        localStorage.getItem("token") ||
-        localStorage.getItem("goride_token");
-
-
-    const user =
-        localStorage.getItem("user") ||
-        localStorage.getItem("goride_user");
-
-
-    if (token || user) {
-
-
-        window.location.href =
-            "user/dashboard.html";
-
-
-    } else {
-
-
-        window.location.href =
-            "user/login.html";
-
-
-    }
-
-}
-
-</script>
-
 
 </body>
 
