@@ -1,1 +1,106 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ride History — GoRide</title><link rel="stylesheet" href="../css/style.css"></head><body><div class="dashboard"><div class="topbar"><a class="brand" href="../index.html">Go<span>Ride</span></a><h2>Ride History</h2></div><section class="panel" id="list">Loading...</section></div><script src="../js/app.js"></script><script>(async()=>{const d=await fetch("/api/rides/my",{headers:authHeaders()}).then(r=>r.json());list.innerHTML=d.rides?.map(r=>`<div class="stat"><span>${r.pickup?.name||"Pickup"} → ${r.destination?.name||"Destination"}</span><b>₹${r.fare} · ${r.status}</b></div>`).join("")||"No rides yet"})()</script></body></html>
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Ride History — GoRide</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+    <div class="dashboard">
+
+        <!-- Top Bar -->
+        <div class="topbar">
+
+            <a class="brand" href="../index.html">
+                Go<span>Ride</span>
+            </a>
+
+            <h2>Ride History</h2>
+
+        </div>
+
+        <!-- Ride History List -->
+        <section
+            class="panel"
+            id="list">
+
+            Loading...
+
+        </section>
+
+    </div>
+
+    <!-- GoRide JavaScript -->
+    <script src="../js/app.js"></script>
+
+    <script>
+        const rideList =
+            document.getElementById("list");
+
+        async function loadRideHistory() {
+
+            try {
+
+                const response = await fetch(
+                    "/api/rides/my",
+                    {
+                        headers: authHeaders()
+                    }
+                );
+
+                const data =
+                    await response.json();
+
+                if (
+                    data.rides &&
+                    data.rides.length > 0
+                ) {
+
+                    rideList.innerHTML =
+                        data.rides.map(ride => `
+                            <div class="stat">
+
+                                <span>
+                                    ${ride.pickup?.name || "Pickup"}
+                                    →
+                                    ${ride.destination?.name || "Destination"}
+                                </span>
+
+                                <b>
+                                    ₹${ride.fare || "—"}
+                                    ·
+                                    ${ride.status || "—"}
+                                </b>
+
+                            </div>
+                        `).join("");
+
+                } else {
+
+                    rideList.innerHTML =
+                        '<p class="muted">No rides yet.</p>';
+
+                }
+
+            } catch (error) {
+
+                console.error(error);
+
+                rideList.innerHTML =
+                    '<p class="muted">Unable to load ride history.</p>';
+
+            }
+        }
+
+        loadRideHistory();
+    </script>
+
+</body>
+
+</html>
