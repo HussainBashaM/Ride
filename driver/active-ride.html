@@ -1,1 +1,118 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Active Ride — GoRide</title><link rel="stylesheet" href="../css/style.css"></head><body><div class="dashboard"><div class="topbar"><a class="brand" href="../index.html">Go<span>Ride</span></a><span class="status">ACTIVE RIDE</span></div><div class="dash-grid"><div id="map" class="map"><div class="map-badge">● Live route</div></div><section class="panel"><h2>Passenger Ride</h2><div id="info"></div><button class="primary full" onclick="updateRideStatus('DRIVER_ARRIVING')">Driver Arriving</button><button class="primary full" onclick="updateRideStatus('DRIVER_AT_PICKUP')">At Pickup</button><button class="primary full" onclick="updateRideStatus('RIDE_STARTED')">Start Ride</button><button class="primary full" onclick="updateRideStatus('RIDE_COMPLETED')">Complete Ride</button><button class="full" onclick="updateRideStatus('CANCELLED')">Cancel Ride</button></section></div></div><script src="https://cdn.socket.io/4.8.0/socket.io.min.js"></script><script src="../js/app.js"></script><script src="../js/driver.js"></script><script src="../js/map.js"></script><script>const r=JSON.parse(localStorage.getItem("driver_active_ride")||"{}");info.innerHTML=`<div class="stat"><span>Pickup</span><b>${r.pickup?.name||"—"}</b></div><div class="stat"><span>Destination</span><b>${r.destination?.name||"—"}</b></div><div class="stat"><span>Fare</span><b>₹${r.fare||"—"}</b></div>`</script></body></html>
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Active Ride — GoRide</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+    <div class="dashboard">
+
+        <!-- Top Bar -->
+        <div class="topbar">
+            <a class="brand" href="../index.html">
+                Go<span>Ride</span>
+            </a>
+
+            <span class="status">ACTIVE RIDE</span>
+        </div>
+
+        <!-- Active Ride -->
+        <div class="dash-grid">
+
+            <!-- Live Map -->
+            <div id="map" class="map">
+                <div class="map-badge">● Live route</div>
+            </div>
+
+            <!-- Ride Panel -->
+            <section class="panel">
+
+                <h2>Passenger Ride</h2>
+
+                <div id="info"></div>
+
+                <button
+                    type="button"
+                    class="primary full"
+                    onclick="updateRideStatus('DRIVER_ARRIVING')">
+                    Driver Arriving
+                </button>
+
+                <button
+                    type="button"
+                    class="primary full"
+                    onclick="updateRideStatus('DRIVER_AT_PICKUP')">
+                    At Pickup
+                </button>
+
+                <button
+                    type="button"
+                    class="primary full"
+                    onclick="updateRideStatus('RIDE_STARTED')">
+                    Start Ride
+                </button>
+
+                <button
+                    type="button"
+                    class="primary full"
+                    onclick="updateRideStatus('RIDE_COMPLETED')">
+                    Complete Ride
+                </button>
+
+                <button
+                    type="button"
+                    class="full"
+                    onclick="updateRideStatus('CANCELLED')">
+                    Cancel Ride
+                </button>
+
+            </section>
+
+        </div>
+
+    </div>
+
+    <!-- Socket.IO -->
+    <script src="https://cdn.socket.io/4.8.0/socket.io.min.js"></script>
+
+    <!-- GoRide JavaScript -->
+    <script src="../js/app.js"></script>
+    <script src="../js/map.js"></script>
+    <script src="../js/driver.js"></script>
+
+    <!-- Active Ride Data -->
+    <script>
+        const rideInfo = document.getElementById("info");
+
+        const r = JSON.parse(
+            localStorage.getItem("driver_active_ride") || "{}"
+        );
+
+        rideInfo.innerHTML = `
+            <div class="stat">
+                <span>Pickup</span>
+                <b>${r.pickup?.name || "—"}</b>
+            </div>
+
+            <div class="stat">
+                <span>Destination</span>
+                <b>${r.destination?.name || "—"}</b>
+            </div>
+
+            <div class="stat">
+                <span>Fare</span>
+                <b>₹${r.fare || "—"}</b>
+            </div>
+        `;
+    </script>
+
+</body>
+
+</html>
