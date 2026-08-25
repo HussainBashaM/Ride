@@ -62,66 +62,154 @@
     <script src="../js/app.js"></script>
 
     <script>
-        const loginForm = document.getElementById("form");
-        const identityInput = document.getElementById("identity");
-        const passwordInput = document.getElementById("password");
-        const message = document.getElementById("msg");
+    const loginForm =
+        document.getElementById("form");
 
-        const API_BASE =
-        window.GORIDE_API ||
-        window.API_BASE_URL ||
+    const identityInput =
+        document.getElementById("identity");
+
+    const passwordInput =
+        document.getElementById("password");
+
+    const message =
+        document.getElementById("msg");
+
+    const API_BASE =
         "https://ride-f6la.onrender.com";
 
-        loginForm.addEventListener("submit", async function (e) {
+    loginForm.addEventListener(
+        "submit",
+        async function (e) {
 
             e.preventDefault();
 
-            message.textContent = "Logging in...";
+            message.textContent =
+                "Logging in...";
 
-            const value = identityInput.value.trim();
+            const value =
+                identityInput.value.trim();
 
             try {
 
-                const data = await postJSON(
-                    "/api/auth/login",
+                const response = await fetch(
+                    API_BASE + "/api/auth/login",
                     {
-                        email: value.includes("@")
-                            ? value
-                            : undefined,
+                        method: "POST",
 
-                        phone: value.includes("@")
-                            ? undefined
-                            : value,
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
 
-                        password: passwordInput.value,
-                        role: "driver"
+                        body: JSON.stringify({
+
+                            email:
+                                value.includes("@")
+                                    ? value
+                                    : undefined,
+
+                            phone:
+                                value.includes("@")
+                                    ? undefined
+                                    : value,
+
+                            password:
+                                passwordInput.value,
+
+                            role: "driver"
+                        })
                     }
                 );
 
+                const data =
+                    await response.json();
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        data.message ||
+                        "Login failed"
+                    );
+                }
+
                 if (data.success) {
 
-                    saveAuth(data);
+                    const receivedToken =
+                        data.token ||
+                        data.accessToken ||
+                        data.jwt;
 
-                    window.location.href =
-                        "dashboard.html";
+                    const receivedUser =
+                        data.user ||
+                        data.data?.user ||
+                        data.account;
+
+                    if (receivedToken) {
+
+                        localStorage.setItem(
+                            "token",
+                            receivedToken
+                        );
+
+                        localStorage.setItem(
+                            "goride_token",
+                            receivedToken
+                        );
+                    }
+
+                    if (receivedUser) {
+
+                        localStorage.setItem(
+                            "user",
+                            JSON.stringify(
+                                receivedUser
+                            )
+                        );
+
+                        localStorage.setItem(
+                            "goride_user",
+                            JSON.stringify(
+                                receivedUser
+                            )
+                        );
+                    }
+
+                    localStorage.setItem(
+                        "goride_role",
+                        "driver"
+                    );
+
+                    message.textContent =
+                        "Login successful!";
+
+                    setTimeout(function () {
+
+                        window.location.href =
+                            "dashboard.html";
+
+                    }, 500);
 
                 } else {
 
                     message.textContent =
-                        data.message || "Login failed";
-
+                        data.message ||
+                        "Login failed";
                 }
 
             } catch (error) {
 
-                console.error(error);
+                console.error(
+                    "Driver login error:",
+                    error
+                );
 
                 message.textContent =
+                    error.message ||
                     "Unable to connect to server.";
-
             }
 
-        });
+        }
+    );
     </script>
 
 </body>
