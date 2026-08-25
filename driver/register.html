@@ -100,113 +100,148 @@
 
     <!-- GoRide JavaScript -->
     <script src="../js/app.js"></script>
+<script>
+    const registerForm = document.getElementById("form");
 
-    <script>
-        const registerForm =
-            document.getElementById("form");
+    const nameInput = document.getElementById("name");
+    const emailInput = document.getElementById("email");
+    const phoneInput = document.getElementById("phone");
+    const passwordInput = document.getElementById("password");
+    const licenceInput = document.getElementById("licenceNumber");
+    const vehicleTypeInput = document.getElementById("vehicleType");
+    const vehicleModelInput = document.getElementById("vehicleModel");
+    const vehicleNumberInput = document.getElementById("vehicleNumber");
+    const message = document.getElementById("msg");
 
-        const nameInput =
-            document.getElementById("name");
+    const API_BASE = "https://ride-f6la.onrender.com";
 
-        const emailInput =
-            document.getElementById("email");
+    registerForm.addEventListener("submit", async function (e) {
 
-        const phoneInput =
-            document.getElementById("phone");
+        e.preventDefault();
 
-        const passwordInput =
-            document.getElementById("password");
+        message.textContent = "Registering driver...";
 
-        const licenceInput =
-            document.getElementById("licenceNumber");
+        try {
 
-        const vehicleTypeInput =
-            document.getElementById("vehicleType");
+            const response = await fetch(
+                API_BASE + "/api/drivers/register",
+                {
+                    method: "POST",
 
-        const vehicleModelInput =
-            document.getElementById("vehicleModel");
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
 
-        const vehicleNumberInput =
-            document.getElementById("vehicleNumber");
+                    body: JSON.stringify({
 
-        const message =
-            document.getElementById("msg");
-        
-        const API_BASE =
-        window.GORIDE_API ||
-        window.API_BASE_URL ||
-        "https://ride-f6la.onrender.com";
+                        name: nameInput.value.trim(),
 
-        registerForm.addEventListener(
-            "submit",
-            async function (e) {
+                        email:
+                            emailInput.value.trim() ||
+                            undefined,
 
-                e.preventDefault();
+                        phone:
+                            phoneInput.value.trim() ||
+                            undefined,
 
-                message.textContent =
-                    "Registering driver...";
+                        password:
+                            passwordInput.value,
 
-                const body = {
-                    name: nameInput.value.trim(),
+                        licenceNumber:
+                            licenceInput.value.trim(),
 
-                    email:
-                        emailInput.value.trim() ||
-                        undefined,
+                        vehicleType:
+                            vehicleTypeInput.value,
 
-                    phone:
-                        phoneInput.value.trim() ||
-                        undefined,
+                        vehicleModel:
+                            vehicleModelInput.value.trim(),
 
-                    password:
-                        passwordInput.value,
+                        vehicleNumber:
+                            vehicleNumberInput.value.trim()
+                    })
+                }
+            );
 
-                    licenceNumber:
-                        licenceInput.value.trim(),
+            const data = await response.json();
 
-                    vehicleType:
-                        vehicleTypeInput.value,
+            if (!response.ok) {
+                throw new Error(
+                    data.message ||
+                    "Driver registration failed"
+                );
+            }
 
-                    vehicleModel:
-                        vehicleModelInput.value.trim(),
+            if (data.success) {
 
-                    vehicleNumber:
-                        vehicleNumberInput.value.trim()
-                };
+                const receivedToken =
+                    data.token ||
+                    data.accessToken ||
+                    data.jwt;
 
-                try {
+                const receivedUser =
+                    data.user ||
+                    data.data?.user ||
+                    data.account;
 
-                    const data = await postJSON(
-                        "/api/drivers/register",
-                        body
+                if (receivedToken) {
+                    localStorage.setItem(
+                        "token",
+                        receivedToken
                     );
 
-                    if (data.success) {
-
-                        saveAuth(data);
-
-                        window.location.href =
-                            "dashboard.html";
-
-                    } else {
-
-                        message.textContent =
-                            data.message ||
-                            "Registration failed";
-
-                    }
-
-                } catch (error) {
-
-                    console.error(error);
-
-                    message.textContent =
-                        "Unable to connect to server.";
-
+                    localStorage.setItem(
+                        "goride_token",
+                        receivedToken
+                    );
                 }
 
+                if (receivedUser) {
+                    localStorage.setItem(
+                        "user",
+                        JSON.stringify(receivedUser)
+                    );
+
+                    localStorage.setItem(
+                        "goride_user",
+                        JSON.stringify(receivedUser)
+                    );
+                }
+
+                localStorage.setItem(
+                    "goride_role",
+                    "driver"
+                );
+
+                message.textContent =
+                    "Driver account created successfully!";
+
+                setTimeout(function () {
+                    window.location.href =
+                        "dashboard.html";
+                }, 500);
+
+            } else {
+
+                message.textContent =
+                    data.message ||
+                    "Driver registration failed";
             }
-        );
-    </script>
+
+        } catch (error) {
+
+            console.error(
+                "Driver registration error:",
+                error
+            );
+
+            message.textContent =
+                error.message ||
+                "Unable to connect to server.";
+        }
+
+    });
+</script>
+    
 
 </body>
 
