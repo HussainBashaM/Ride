@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const API_BASE =
         window.API_BASE_URL ||
         localStorage.getItem("API_BASE_URL") ||
-        "https://ridego-m7tz.onrender.com";
+        "https://ride-f6la.onrender.com";
 
 
     /* -----------------------------------------------------
