@@ -56,7 +56,7 @@
 
     // Remove active from ALL vehicle buttons
     document
-        .querySelectorAll(".vehicle button")
+        .querySelectorAll(".vehicle-btn")
         .forEach(function (button) {
             button.classList.remove("active");
         });
