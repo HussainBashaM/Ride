@@ -67,6 +67,11 @@
         const passwordInput = document.getElementById("password");
         const message = document.getElementById("msg");
 
+        const API_BASE =
+        window.GORIDE_API ||
+        window.API_BASE_URL ||
+        "https://ride-f6la.onrender.com";
+
         loginForm.addEventListener("submit", async function (e) {
 
             e.preventDefault();
