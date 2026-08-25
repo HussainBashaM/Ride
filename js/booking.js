@@ -52,23 +52,23 @@
 
     window.selectVehicle = function (vehicle, element) {
 
-        selectedVehicle = vehicle;
+    selectedVehicle = vehicle;
 
-        document
-            .querySelectorAll(".vehicle button")
-            .forEach(function (button) {
+    // Remove active from ALL vehicle buttons
+    document
+        .querySelectorAll(".vehicle button")
+        .forEach(function (button) {
+            button.classList.remove("active");
+        });
 
-                button.classList.remove("active");
+    // Add active ONLY to selected button
+    if (element) {
+        element.classList.add("active");
+    }
 
-            });
-
-        if (element) {
-            element.classList.add("active");
-        }
-
-        calculateFare();
-    };
-
+    // Recalculate fare
+    calculateFare();
+};
 
     /* =====================================================
        GET INPUTS
