@@ -86,39 +86,47 @@
 
     <!-- Login Logic -->
     <script>
-        const loginForm =
-            document.getElementById("loginForm");
+    const loginForm =
+        document.getElementById("loginForm");
 
-        const identityInput =
-            document.getElementById("identity");
+    const identityInput =
+        document.getElementById("identity");
 
-        const passwordInput =
-            document.getElementById("password");
+    const passwordInput =
+        document.getElementById("password");
 
-        const message =
-            document.getElementById("msg");
-        const API_BASE =
-        window.GORIDE_API ||
-        window.API_BASE_URL ||
+    const message =
+        document.getElementById("msg");
+
+    const API_BASE =
         "https://ride-f6la.onrender.com";
 
-        loginForm.addEventListener(
-            "submit",
-            async function (e) {
+    loginForm.addEventListener(
+        "submit",
+        async function (e) {
 
-                e.preventDefault();
+            e.preventDefault();
 
-                message.textContent =
-                    "Logging in...";
+            message.textContent =
+                "Logging in...";
 
-                const value =
-                    identityInput.value.trim();
+            const value =
+                identityInput.value.trim();
 
-                try {
+            try {
 
-                    const data = await postJSON(
-                        "/api/auth/login",
-                        {
+                const response = await fetch(
+                    API_BASE + "/api/auth/login",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+
                             email:
                                 value.includes("@")
                                     ? value
@@ -133,42 +141,98 @@
                                 passwordInput.value,
 
                             role: "user"
-                        }
-                    );
-
-                    if (data.success) {
-
-                        saveAuth(data);
-
-                        if (
-                            typeof goAfterLogin ===
-                            "function"
-                        ) {
-                            goAfterLogin();
-                        } else {
-                            window.location.href =
-                                "dashboard.html";
-                        }
-
-                    } else {
-
-                        message.textContent =
-                            data.message ||
-                            "Login failed";
-
+                        })
                     }
+                );
 
-                } catch (error) {
+                const data =
+                    await response.json();
 
-                    console.error(error);
-
-                    message.textContent =
-                        "Unable to connect to server.";
-
+                if (!response.ok) {
+                    throw new Error(
+                        data.message ||
+                        "Login failed"
+                    );
                 }
 
+                if (data.success) {
+
+                    const receivedToken =
+                        data.token ||
+                        data.accessToken ||
+                        data.jwt;
+
+                    const receivedUser =
+                        data.user ||
+                        data.data?.user ||
+                        data.account;
+
+                    if (receivedToken) {
+
+                        localStorage.setItem(
+                            "token",
+                            receivedToken
+                        );
+
+                        localStorage.setItem(
+                            "goride_token",
+                            receivedToken
+                        );
+                    }
+
+                    if (receivedUser) {
+
+                        localStorage.setItem(
+                            "user",
+                            JSON.stringify(
+                                receivedUser
+                            )
+                        );
+
+                        localStorage.setItem(
+                            "goride_user",
+                            JSON.stringify(
+                                receivedUser
+                            )
+                        );
+                    }
+
+                    localStorage.setItem(
+                        "goride_role",
+                        "user"
+                    );
+
+                    message.textContent =
+                        "Login successful!";
+
+                    setTimeout(function () {
+
+                        window.location.href =
+                            "dashboard.html";
+
+                    }, 500);
+
+                } else {
+
+                    message.textContent =
+                        data.message ||
+                        "Login failed";
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "User login error:",
+                    error
+                );
+
+                message.textContent =
+                    error.message ||
+                    "Unable to connect to server.";
             }
-        );
+
+        }
+    );
     </script>
 
 </body>
