@@ -1,131 +1,416 @@
 <!doctype html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Dashboard — GoRide</title>
+
+    <title>GoRide — Book a Ride</title>
 
     <link rel="stylesheet" href="../css/style.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #f7f5ff;
+            color: #20202a;
+            font-family: Arial, sans-serif;
+        }
+
+        .ride-app {
+            width: 100%;
+            max-width: 520px;
+            margin: auto;
+            min-height: 100vh;
+            padding-bottom: 30px;
+        }
+
+        .ride-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 22px 20px 12px;
+        }
+
+        .ride-header .brand {
+            text-decoration: none;
+            font-size: 28px;
+            font-weight: 800;
+            color: #222;
+        }
+
+        .ride-header .brand span {
+            color: #7c3aed;
+        }
+
+        .profile-btn {
+            width: 42px;
+            height: 42px;
+            border: 0;
+            border-radius: 50%;
+            background: #eee8ff;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .welcome {
+            padding: 8px 20px 18px;
+        }
+
+        .welcome small {
+            color: #777;
+        }
+
+        .welcome h1 {
+            margin: 5px 0;
+            font-size: 28px;
+        }
+
+        .booking-card {
+            margin: 0 16px;
+            padding: 18px;
+            background: #fff;
+            border-radius: 24px;
+            box-shadow: 0 8px 30px rgba(80, 50, 130, .08);
+        }
+
+        .location-box {
+            border: 1px solid #e4e0ec;
+            border-radius: 16px;
+            padding: 13px;
+            margin-bottom: 12px;
+            background: #faf9fd;
+        }
+
+        .location-title {
+            display: block;
+            font-size: 12px;
+            color: #777;
+            margin-bottom: 6px;
+        }
+
+        .location-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .location-dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            background: #22a95a;
+            flex-shrink: 0;
+        }
+
+        .destination-dot {
+            background: #7c3aed;
+        }
+
+        .location-input {
+            width: 100%;
+            border: 0;
+            outline: none;
+            background: transparent;
+            font-size: 16px;
+            color: #222;
+        }
+
+        .location-input::placeholder {
+            color: #999;
+        }
+
+        .map-wrap {
+            margin: 16px;
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(80, 50, 130, .10);
+        }
+
+        #map {
+            width: 100%;
+            height: 300px;
+            position: relative;
+        }
+
+        .map-badge {
+            position: absolute;
+            z-index: 500;
+            top: 14px;
+            left: 14px;
+            padding: 9px 13px;
+            border-radius: 20px;
+            background: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,.12);
+            font-size: 13px;
+        }
+
+        .section-title {
+            margin: 22px 0 12px;
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .vehicles {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .vehicle-btn {
+            border: 1px solid #e3dfeb;
+            background: #fff;
+            border-radius: 17px;
+            padding: 14px 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .vehicle-btn .icon {
+            display: block;
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+
+        .vehicle-btn.active {
+            border: 2px solid #7c3aed;
+            background: #f0eaff;
+            color: #6d28d9;
+        }
+
+        .ride-info {
+            margin-top: 18px;
+            padding: 15px;
+            border-radius: 18px;
+            background: #f7f6fa;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            text-align: center;
+        }
+
+        .ride-info span {
+            display: block;
+            color: #777;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .ride-info b {
+            font-size: 17px;
+        }
+
+        .confirm-btn {
+            width: 100%;
+            margin-top: 18px;
+            padding: 16px;
+            border: 0;
+            border-radius: 17px;
+            background: linear-gradient(135deg, #6d28d9, #8b5cf6);
+            color: white;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .driver-convert {
+            margin: 16px;
+            padding: 18px;
+            border-radius: 20px;
+            background: white;
+            box-shadow: 0 8px 25px rgba(80,50,130,.07);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .driver-convert h3 {
+            margin: 0 0 5px;
+            font-size: 16px;
+        }
+
+        .driver-convert p {
+            margin: 0;
+            color: #777;
+            font-size: 13px;
+        }
+
+        .driver-btn {
+            border: 0;
+            border-radius: 12px;
+            padding: 11px 14px;
+            background: #eee8ff;
+            color: #6d28d9;
+            font-weight: 700;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        @media (max-width: 380px) {
+            .ride-info {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-    <div class="dashboard">
+<div class="ride-app">
 
-        <!-- Top Bar -->
-        <div class="topbar">
-            <a class="brand" href="../index.html">
-                Go<span>Ride</span>
-            </a>
+    <header class="ride-header">
+        <a class="brand" href="../index.html">
+            Go<span>Ride</span>
+        </a>
 
-            <span class="muted">Passenger Dashboard</span>
-        </div>
+        <button
+            class="profile-btn"
+            onclick="location.href='profile.html'">
+            👤
+        </button>
+    </header>
 
-        <!-- Dashboard Grid -->
-        <div class="dash-grid">
+    <section class="welcome">
+        <small>Ready for your next trip?</small>
+        <h1>Where are you going?</h1>
+    </section>
 
-            <!-- Map -->
-            <div id="map" class="map">
-                <div class="map-badge">● Live map</div>
-            </div>
+    <section class="booking-card">
 
-            <!-- Booking Panel -->
-            <section class="panel">
+        <div class="location-box">
+            <span class="location-title">PICKUP</span>
 
-                <h2>Book a Ride</h2>
+            <div class="location-row">
+                <span class="location-dot"></span>
 
-                <label for="pickup">Pickup</label>
                 <input
-                    class="input"
+                    class="location-input"
                     id="pickup"
                     type="text"
                     placeholder="Enter pickup location"
-                    oninput="estimate()"
-                >
+                    oninput="estimate()">
+            </div>
+        </div>
 
-                <label for="destination">Destination</label>
+        <div class="location-box">
+            <span class="location-title">DESTINATION</span>
+
+            <div class="location-row">
+                <span class="location-dot destination-dot"></span>
+
                 <input
-                    class="input"
+                    class="location-input"
                     id="destination"
                     type="text"
-                    placeholder="Where are you going?"
-                    oninput="estimate()"
-                >
+                    placeholder="Where do you want to go?"
+                    oninput="estimate()">
+            </div>
+        </div>
 
-                <h3>Choose Vehicle</h3>
+        <h3 class="section-title">Choose your ride</h3>
 
-                <div class="vehicle">
+        <div class="vehicles">
 
-                    <button
-                        type="button"
-                        class="active"
-                        onclick="selectVehicle('Bike', this)"
-                    >
-                        🛵
-                        <br>
-                        Bike
-                    </button>
+            <button
+                type="button"
+                class="vehicle-btn active"
+                onclick="selectVehicle('Bike', this)">
 
-                    <button
-                        type="button"
-                        onclick="selectVehicle('Auto', this)"
-                    >
-                        🛺
-                        <br>
-                        Auto
-                    </button>
+                <span class="icon">🏍️</span>
+                Bike
+            </button>
 
-                    <button
-                        type="button"
-                        onclick="selectVehicle('Car', this)"
-                    >
-                        🚗
-                        <br>
-                        Car
-                    </button>
+            <button
+                type="button"
+                class="vehicle-btn"
+                onclick="selectVehicle('Auto', this)">
 
-                </div>
+                <span class="icon">🛺</span>
+                Auto
+            </button>
 
-                <!-- Ride Details -->
-                <div class="stat">
-                    <span>Distance</span>
-                    <b id="distance">--</b>
-                </div>
+            <button
+                type="button"
+                class="vehicle-btn"
+                onclick="selectVehicle('Car', this)">
 
-                <div class="stat">
-                    <span>ETA</span>
-                    <b id="time">--</b>
-                </div>
+                <span class="icon">🚗</span>
+                Car
+            </button>
 
-                <div class="stat">
-                    <span>Estimated Fare</span>
-                    <b id="fare">--</b>
-                </div>
+        </div>
 
-                <!-- Confirm -->
-                <button
-                    type="button"
-                    class="primary full"
-                    onclick="confirmRide()"
-                >
-                    Confirm Ride
-                </button>
+        <div class="ride-info">
 
-            </section>
+            <div>
+                <span>Distance</span>
+                <b id="distance">--</b>
+            </div>
 
+            <div>
+                <span>ETA</span>
+                <b id="time">--</b>
+            </div>
+
+            <div>
+                <span>Estimated Fare</span>
+                <b id="fare">₹--</b>
+            </div>
+
+        </div>
+
+        <button
+            type="button"
+            class="confirm-btn"
+            onclick="confirmRide()">
+            Confirm Ride
+        </button>
+
+    </section>
+
+    <div class="map-wrap">
+
+        <div id="map">
+            <div class="map-badge">
+                🟢 Live map
+            </div>
         </div>
 
     </div>
 
-    <!-- Socket.IO -->
-    <script src="https://cdn.socket.io/4.8.0/socket.io.min.js"></script>
+    <section class="driver-convert">
 
-    <!-- GoRide JavaScript -->
-    <script src="../js/app.js"></script>
-    <script src="../js/map.js"></script>
-    <script src="../js/booking.js"></script>
+        <div>
+            <h3>Want to earn with GoRide?</h3>
+            <p>Use the same account to become a driver.</p>
+        </div>
+
+        <button
+            class="driver-btn"
+            onclick="becomeDriver()">
+            🛵 Become Driver
+        </button>
+
+    </section>
+
+</div>
+
+<script src="https://cdn.socket.io/4.8.0/socket.io.min.js"></script>
+
+<script src="../js/app.js"></script>
+<script src="../js/map.js"></script>
+<script src="../js/booking.js"></script>
+
+<script>
+    function becomeDriver() {
+        window.location.href = "driver-details.html";
+    }
+</script>
 
 </body>
-
 </html>
