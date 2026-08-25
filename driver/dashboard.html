@@ -1,126 +1,461 @@
 <!doctype html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Driver Dashboard — GoRide</title>
+    <title>GoRide — Driver</title>
 
     <link rel="stylesheet" href="../css/style.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #f7f5ff;
+            color: #20202a;
+            font-family: Arial, sans-serif;
+        }
+
+        .driver-app {
+            max-width: 520px;
+            min-height: 100vh;
+            margin: auto;
+            padding-bottom: 30px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .brand {
+            text-decoration: none;
+            font-size: 28px;
+            font-weight: 800;
+            color: #222;
+        }
+
+        .brand span {
+            color: #7c3aed;
+        }
+
+        .profile {
+            width: 42px;
+            height: 42px;
+            border: 0;
+            border-radius: 50%;
+            background: #eee8ff;
+            font-size: 20px;
+        }
+
+        .driver-title {
+            padding: 0 20px 15px;
+        }
+
+        .driver-title small {
+            color: #777;
+        }
+
+        .driver-title h1 {
+            margin: 5px 0;
+            font-size: 27px;
+        }
+
+        .status-card {
+            margin: 0 16px 16px;
+            padding: 18px;
+            border-radius: 22px;
+            background: white;
+            box-shadow: 0 8px 28px rgba(70,40,120,.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .status-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .status-dot {
+            width: 13px;
+            height: 13px;
+            background: #888;
+            border-radius: 50%;
+        }
+
+        .status-dot.online {
+            background: #20b45a;
+        }
+
+        .status-text strong {
+            display: block;
+            font-size: 16px;
+        }
+
+        .status-text span {
+            font-size: 12px;
+            color: #777;
+        }
+
+        .online-btn {
+            border: 0;
+            padding: 11px 15px;
+            border-radius: 12px;
+            background: #eee8ff;
+            color: #6d28d9;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .map-card {
+            margin: 0 16px 20px;
+            overflow: hidden;
+            border-radius: 22px;
+            background: white;
+            box-shadow: 0 8px 28px rgba(70,40,120,.08);
+        }
+
+        #map {
+            width: 100%;
+            height: 310px;
+            position: relative;
+        }
+
+        .map-badge {
+            position: absolute;
+            z-index: 500;
+            top: 13px;
+            left: 13px;
+            padding: 9px 13px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,.12);
+            font-size: 13px;
+        }
+
+        .section-title {
+            padding: 0 20px;
+            font-size: 20px;
+            margin: 20px 0 12px;
+        }
+
+        #requests {
+            padding: 0 16px;
+        }
+
+        .request-card {
+            background: white;
+            border-radius: 20px;
+            padding: 17px;
+            margin-bottom: 13px;
+            box-shadow: 0 7px 25px rgba(70,40,120,.07);
+        }
+
+        .request-title {
+            font-weight: 700;
+            margin-bottom: 13px;
+        }
+
+        .place {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .place:last-of-type {
+            border-bottom: 0;
+        }
+
+        .place span {
+            display: block;
+            color: #888;
+            font-size: 12px;
+            margin-bottom: 3px;
+        }
+
+        .request-stats {
+            display: flex;
+            justify-content: space-between;
+            margin: 13px 0;
+            font-weight: 700;
+        }
+
+        .request-actions {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 9px;
+        }
+
+        .request-actions button {
+            border: 0;
+            padding: 13px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .skip-btn {
+            background: #f1f1f4;
+        }
+
+        .accept-btn {
+            background: linear-gradient(135deg,#6d28d9,#8b5cf6);
+            color: white;
+        }
+
+        .switch-card {
+            margin: 20px 16px;
+            padding: 16px;
+            border-radius: 18px;
+            background: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 7px 25px rgba(70,40,120,.07);
+        }
+
+        .switch-card p {
+            margin: 0;
+            font-size: 13px;
+            color: #777;
+        }
+
+        .switch-btn {
+            border: 0;
+            padding: 11px 13px;
+            border-radius: 12px;
+            background: #eee8ff;
+            color: #6d28d9;
+            font-weight: 700;
+        }
+    </style>
 </head>
 
 <body>
 
-    <div class="dashboard">
+<div class="driver-app">
 
-        <!-- Top Bar -->
-        <div class="topbar">
+    <header class="header">
 
-            <a class="brand" href="../index.html">
-                Go<span>Ride</span>
-            </a>
+        <a class="brand" href="../index.html">
+            Go<span>Ride</span>
+        </a>
 
-            <div>
-                <span id="onlineState" class="muted">
+        <button
+            class="profile"
+            onclick="location.href='profile.html'">
+            👤
+        </button>
+
+    </header>
+
+    <section class="driver-title">
+        <small>Driver mode</small>
+        <h1>Ready to earn?</h1>
+    </section>
+
+    <section class="status-card">
+
+        <div class="status-left">
+
+            <div
+                id="statusDot"
+                class="status-dot">
+            </div>
+
+            <div class="status-text">
+                <strong id="onlineState">
                     OFFLINE
-                </span>
+                </strong>
 
-                <button
-                    type="button"
-                    class="primary"
-                    onclick="setOnline()">
-                    Toggle Online
-                </button>
+                <span id="statusDescription">
+                    Go online to receive rides
+                </span>
             </div>
 
         </div>
 
-        <!-- Driver Dashboard -->
-        <div class="dash-grid">
+        <button
+            type="button"
+            class="online-btn"
+            onclick="setOnline()">
 
-            <!-- Live Driver Map -->
-            <div id="map" class="map">
-                <div class="map-badge">
-                    ● Driver live map
-                </div>
+            Go Online
+
+        </button>
+
+    </section>
+
+    <section class="map-card">
+
+        <div id="map">
+
+            <div class="map-badge">
+                🟢 Driver live map
             </div>
 
-            <!-- Incoming Rides -->
-            <section class="panel">
+        </div>
 
-                <h2>Incoming Rides</h2>
+    </section>
 
-                <div id="requests">
-                    <p class="muted">
-                        Waiting for nearby ride requests...
-                    </p>
-                </div>
+    <h2 class="section-title">
+        Incoming Rides
+    </h2>
 
-            </section>
+    <div id="requests">
+
+        <div class="request-card">
+
+            <div class="request-title">
+                No new rides
+            </div>
+
+            <p style="margin:0;color:#777;font-size:14px;">
+                Go online to receive nearby ride requests.
+            </p>
 
         </div>
 
     </div>
 
-    <!-- Socket.IO -->
-    <script src="https://cdn.socket.io/4.8.0/socket.io.min.js"></script>
+    <section class="switch-card">
 
-    <!-- GoRide JavaScript -->
-    <script src="../js/app.js"></script>
-    <script src="../js/map.js"></script>
-    <script src="../js/driver.js"></script>
+        <div>
+            <strong>Passenger mode</strong>
+            <p>Book a ride using this same account.</p>
+        </div>
 
-    <!-- Live Ride Requests -->
-    <script>
-        const requests =
-            document.getElementById("requests");
+        <button
+            class="switch-btn"
+            onclick="switchPassenger()">
+            👤 Switch
+        </button>
 
-        if (typeof io === "function") {
+    </section>
 
-            const socket = io();
+</div>
 
-            socket.on("ride:new", (r) => {
+<script src="https://cdn.socket.io/4.8.0/socket.io.min.js"></script>
 
-                const rideCard =
-                    document.createElement("div");
+<script src="../js/app.js"></script>
+<script src="../js/map.js"></script>
+<script src="../js/driver.js"></script>
 
-                rideCard.className = "panel";
+<script>
 
-                rideCard.innerHTML = `
-                    <b>New ride request</b>
+    function switchPassenger() {
+        window.location.href = "../user/dashboard.html";
+    }
 
-                    <p>
-                        ${r.pickup?.name || "Pickup"}
-                        →
-                        ${r.destination?.name || "Destination"}
-                    </p>
+    const originalSetOnline =
+        window.setOnline;
 
-                    <p>
-                        ₹${r.fare || "—"}
-                        ·
-                        ${r.distance || "—"} km
-                    </p>
+    const onlineButton =
+        document.querySelector(".online-btn");
+
+    const statusDot =
+        document.getElementById("statusDot");
+
+    const statusDescription =
+        document.getElementById("statusDescription");
+
+    function updateDriverStatus() {
+
+        const state =
+            document.getElementById("onlineState");
+
+        if (
+            state &&
+            state.textContent.trim().toUpperCase() === "ONLINE"
+        ) {
+
+            statusDot.classList.add("online");
+
+            onlineButton.textContent =
+                "Go Offline";
+
+            statusDescription.textContent =
+                "You are receiving ride requests";
+
+        } else {
+
+            statusDot.classList.remove("online");
+
+            onlineButton.textContent =
+                "Go Online";
+
+            statusDescription.textContent =
+                "Go online to receive rides";
+        }
+    }
+
+    setInterval(updateDriverStatus, 500);
+
+    const requests =
+        document.getElementById("requests");
+
+    if (typeof io === "function") {
+
+        const socket = io();
+
+        socket.on("ride:new", function (r) {
+
+            const card =
+                document.createElement("div");
+
+            card.className =
+                "request-card";
+
+            card.innerHTML = `
+
+                <div class="request-title">
+                    🚕 New ride request
+                </div>
+
+                <div class="place">
+                    <span>Pickup</span>
+                    ${r.pickup?.name || "Pickup location"}
+                </div>
+
+                <div class="place">
+                    <span>Destination</span>
+                    ${r.destination?.name || "Destination"}
+                </div>
+
+                <div class="request-stats">
+                    <span>₹${r.fare || "--"}</span>
+                    <span>${r.distance || "--"} km</span>
+                </div>
+
+                <div class="request-actions">
 
                     <button
-                        type="button"
-                        class="primary"
-                        onclick="acceptRide('${r._id}')">
-                        Accept
-                    </button>
-
-                    <button
-                        type="button"
-                        onclick="this.parentElement.remove()">
+                        class="skip-btn"
+                        onclick="this.closest('.request-card').remove()">
                         Skip
                     </button>
-                `;
 
-                requests.appendChild(rideCard);
-            });
-        }
-    </script>
+                    <button
+                        class="accept-btn"
+                        onclick="acceptRide('${r._id}')">
+                        Accept Ride
+                    </button>
+
+                </div>
+            `;
+
+            requests.prepend(card);
+        });
+    }
+
+</script>
 
 </body>
-
 </html>
