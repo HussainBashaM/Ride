@@ -76,89 +76,134 @@
 
     <!-- GoRide JavaScript -->
     <script src="../js/app.js"></script>
-
     <script>
-        const registerForm =
-            document.getElementById("form");
+    const registerForm = document.getElementById("form");
 
-        const nameInput =
-            document.getElementById("name");
+    const nameInput = document.getElementById("name");
+    const emailInput = document.getElementById("email");
+    const phoneInput = document.getElementById("phone");
+    const passwordInput = document.getElementById("password");
+    const message = document.getElementById("msg");
 
-        const emailInput =
-            document.getElementById("email");
-
-        const phoneInput =
-            document.getElementById("phone");
-
-        const passwordInput =
-            document.getElementById("password");
-
-        const message =
-            document.getElementById("msg");
-        
     const API_BASE =
         window.GORIDE_API ||
         window.API_BASE_URL ||
         "https://ride-f6la.onrender.com";
-        
-        registerForm.addEventListener(
-            "submit",
-            async function (e) {
 
-                e.preventDefault();
+    registerForm.addEventListener("submit", async function (e) {
 
-                message.textContent =
-                    "Creating account...";
+        e.preventDefault();
 
-                try {
+        message.textContent = "Creating account...";
+        message.style.display = "block";
 
-                    const data = await postJSON(
-                        "/api/auth/register",
-                        {
-                            name:
-                                nameInput.value.trim(),
+        try {
 
-                            email:
-                                emailInput.value.trim() ||
-                                undefined,
+            const response = await fetch(
+                API_BASE + "/api/auth/register",
+                {
+                    method: "POST",
 
-                            phone:
-                                phoneInput.value.trim() ||
-                                undefined,
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
 
-                            password:
-                                passwordInput.value
-                        }
+                    body: JSON.stringify({
+                        name: nameInput.value.trim(),
+
+                        email:
+                            emailInput.value.trim() ||
+                            undefined,
+
+                        phone:
+                            phoneInput.value.trim() ||
+                            undefined,
+
+                        password:
+                            passwordInput.value
+                    })
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.message ||
+                    "Registration failed"
+                );
+            }
+
+            if (data.success) {
+
+                const receivedToken =
+                    data.token ||
+                    data.accessToken ||
+                    data.jwt;
+
+                const receivedUser =
+                    data.user ||
+                    data.data?.user ||
+                    data.account;
+
+                if (receivedToken) {
+                    localStorage.setItem(
+                        "token",
+                        receivedToken
                     );
 
-                    if (data.success) {
-
-                        saveAuth(data);
-
-                        window.location.href =
-                            "dashboard.html";
-
-                    } else {
-
-                        message.textContent =
-                            data.message ||
-                            "Registration failed";
-
-                    }
-
-                } catch (error) {
-
-                    console.error(error);
-
-                    message.textContent =
-                        "Unable to connect to server.";
-
+                    localStorage.setItem(
+                        "goride_token",
+                        receivedToken
+                    );
                 }
 
+                if (receivedUser) {
+                    localStorage.setItem(
+                        "user",
+                        JSON.stringify(receivedUser)
+                    );
+
+                    localStorage.setItem(
+                        "goride_user",
+                        JSON.stringify(receivedUser)
+                    );
+                }
+
+                localStorage.setItem(
+                    "goride_role",
+                    "user"
+                );
+
+                message.textContent =
+                    "Account created successfully!";
+
+                message.style.color = "green";
+
+                setTimeout(function () {
+                    window.location.href =
+                        "dashboard.html";
+                }, 500);
+
+            } else {
+
+                message.textContent =
+                    data.message ||
+                    "Registration failed";
             }
-        );
-    </script>
 
-</body>
+        } catch (error) {
 
-</html>
+            console.error(
+                "GoRide registration error:",
+                error
+            );
+
+            message.textContent =
+                error.message ||
+                "Unable to connect to server.";
+
+        }
+
+    });
+    </script> 
