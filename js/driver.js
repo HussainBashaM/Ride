@@ -81,66 +81,132 @@ function getCurrentLocation() {
 
         if (!navigator.geolocation) {
 
-            alert("Location is not supported on this device.");
+            alert(
+                "Location is not supported on this device."
+            );
 
             resolve(null);
             return;
         }
+
+
+        /*
+         * First attempt:
+         * Normal GPS/location mode
+         */
 
         navigator.geolocation.getCurrentPosition(
 
             function (position) {
 
                 const location = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
+
+                    lat:
+                        position.coords.latitude,
+
+                    lng:
+                        position.coords.longitude
                 };
 
                 console.log(
-                    "Current driver location:",
+                    "Driver location:",
                     location
                 );
 
                 resolve(location);
             },
 
+
             function (error) {
 
-                console.error(
-                    "GPS error:",
+                console.warn(
+                    "First location attempt failed:",
                     error.code,
                     error.message
                 );
 
-                if (error.code === 1) {
 
-                    alert(
-                        "Location permission is blocked. " +
-                        "Please allow Location permission for GoRide in your browser settings."
-                    );
+                /*
+                 * Second attempt:
+                 * Allow more time and use
+                 * cached/network location.
+                 */
 
-                } else if (error.code === 2) {
+                navigator.geolocation.getCurrentPosition(
 
-                    alert(
-                        "Your current location could not be detected. " +
-                        "Please turn ON GPS/Location and try again."
-                    );
+                    function (position) {
 
-                } else if (error.code === 3) {
+                        const location = {
 
-                    alert(
-                        "Location request timed out. " +
-                        "Please try again."
-                    );
-                }
+                            lat:
+                                position.coords.latitude,
 
-                resolve(null);
+                            lng:
+                                position.coords.longitude
+                        };
+
+                        console.log(
+                            "Driver location fallback:",
+                            location
+                        );
+
+                        resolve(location);
+                    },
+
+
+                    function (secondError) {
+
+                        console.error(
+                            "Location failed:",
+                            secondError.code,
+                            secondError.message
+                        );
+
+
+                        if (
+                            secondError.code === 1
+                        ) {
+
+                            alert(
+                                "Location permission is blocked. " +
+                                "Please allow location permission for GoRide."
+                            );
+
+                        } else if (
+                            secondError.code === 2
+                        ) {
+
+                            alert(
+                                "Unable to detect your location. " +
+                                "Please turn ON GPS/Location and try again."
+                            );
+
+                        } else {
+
+                            alert(
+                                "Unable to get your location. " +
+                                "Please turn ON GPS and try again."
+                            );
+                        }
+
+
+                        resolve(null);
+                    },
+
+
+                    {
+                        enableHighAccuracy: false,
+                        timeout: 30000,
+                        maximumAge: 60000
+                    }
+                );
             },
+
 
             {
                 enableHighAccuracy: true,
-                timeout: 15000,
-                maximumAge: 0
+                timeout: 30000,
+                maximumAge: 10000
             }
         );
     });
