@@ -1,6 +1,6 @@
 /* =========================================================
    GoRide MAP.JS
-   Real map + current location + route
+   Fast GPS + Leaflet map + current location + route
    ========================================================= */
 
 (function () {
@@ -14,7 +14,105 @@
     let pickupLocation = null;
     let destinationLocation = null;
 
-    let leafletLoaded = false;
+    let gpsLocation = null;
+    let leafletLoading = null;
+
+    /* =====================================================
+       START GPS IMMEDIATELY
+       ===================================================== */
+
+    function getCurrentLocation() {
+
+        if (!navigator.geolocation) {
+            console.warn("Geolocation is not supported.");
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+
+            function (position) {
+
+                const lat =
+                    position.coords.latitude;
+
+                const lng =
+                    position.coords.longitude;
+
+                gpsLocation = {
+                    lat: lat,
+                    lng: lng
+                };
+
+                window.GoRideCurrentLocation = {
+                    lat: lat,
+                    lng: lng
+                };
+
+                console.log(
+                    "GoRide GPS:",
+                    lat,
+                    lng
+                );
+
+                /*
+                 * Update current marker if map
+                 * has already loaded.
+                 */
+
+                updateCurrentMarker();
+
+                /*
+                 * Automatically use GPS
+                 * as pickup location.
+                 */
+
+                const pickup =
+                    document.getElementById("pickup");
+
+                if (
+                    pickup &&
+                    (
+                        !pickup.value.trim() ||
+                        pickup.value.trim() ===
+                        "Current location"
+                    )
+                ) {
+
+                    pickup.value =
+                        "Current location";
+
+                    setLocation(
+                        "pickup",
+                        lat,
+                        lng,
+                        "Current location"
+                    );
+                }
+
+            },
+
+            function (error) {
+
+                console.warn(
+                    "GoRide GPS error:",
+                    error.message
+                );
+
+                /*
+                 * Do not break the map if
+                 * location permission is denied.
+                 */
+
+            },
+
+            {
+                enableHighAccuracy: true,
+                timeout: 15000,
+                maximumAge: 10000
+            }
+        );
+    }
+
 
     /* =====================================================
        LOAD LEAFLET
@@ -22,41 +120,54 @@
 
     function loadLeaflet() {
 
-        return new Promise(function (resolve, reject) {
+        if (window.L) {
+            return Promise.resolve();
+        }
 
-            if (window.L) {
-                leafletLoaded = true;
-                resolve();
-                return;
-            }
+        if (leafletLoading) {
+            return leafletLoading;
+        }
 
-            const css = document.createElement("link");
+        leafletLoading =
+            new Promise(function (resolve, reject) {
 
-            css.rel = "stylesheet";
-            css.href =
-                "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+                const css =
+                    document.createElement("link");
 
-            document.head.appendChild(css);
+                css.rel = "stylesheet";
 
-            const script =
-                document.createElement("script");
+                css.href =
+                    "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
 
-            script.src =
-                "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+                document.head.appendChild(css);
 
-            script.onload = function () {
-                leafletLoaded = true;
-                resolve();
-            };
 
-            script.onerror = function () {
-                reject(
-                    new Error("Unable to load map library")
-                );
-            };
+                const script =
+                    document.createElement("script");
 
-            document.head.appendChild(script);
-        });
+                script.src =
+                    "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+
+                script.onload =
+                    function () {
+
+                        resolve();
+                    };
+
+                script.onerror =
+                    function () {
+
+                        reject(
+                            new Error(
+                                "Unable to load Leaflet"
+                            )
+                        );
+                    };
+
+                document.head.appendChild(script);
+            });
+
+        return leafletLoading;
     }
 
 
@@ -69,28 +180,40 @@
         const mapElement =
             document.getElementById("map");
 
-        if (!mapElement) return;
+        if (!mapElement) {
+            return;
+        }
+
+        /*
+         * IMPORTANT:
+         * Start GPS without waiting for Leaflet.
+         */
+
+        getCurrentLocation();
 
         try {
 
             await loadLeaflet();
 
             if (map) {
-                map.invalidateSize();
+
+                setTimeout(function () {
+                    map.invalidateSize();
+                }, 100);
+
+                updateCurrentMarker();
+
                 return;
             }
 
-            /*
-             * Default location:
-             * India center
-             */
+            map =
+                L.map("map", {
+                    zoomControl: true
+                }).setView(
+                    [20.5937, 78.9629],
+                    5
+                );
 
-            map = L.map("map", {
-                zoomControl: true
-            }).setView(
-                [20.5937, 78.9629],
-                5
-            );
 
             L.tileLayer(
                 "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -101,9 +224,30 @@
                 }
             ).addTo(map);
 
-            getCurrentLocation();
+
+            /*
+             * If GPS arrived while Leaflet
+             * was loading, use it now.
+             */
+
+            updateCurrentMarker();
+
 
             setupLocationInputs();
+
+
+            /*
+             * Fix map size after rendering.
+             */
+
+            setTimeout(function () {
+
+                if (map) {
+                    map.invalidateSize();
+                }
+
+            }, 300);
+
 
         } catch (error) {
 
@@ -132,14 +276,101 @@
 
 
     /* =====================================================
-       CURRENT LOCATION
+       CURRENT MARKER
        ===================================================== */
 
-    function getCurrentLocation() {
+    function updateCurrentMarker() {
 
-        if (!navigator.geolocation) {
+        if (!map || !gpsLocation) {
             return;
         }
+
+        const position = [
+            gpsLocation.lat,
+            gpsLocation.lng
+        ];
+
+
+        if (currentMarker) {
+
+            currentMarker.setLatLng(
+                position
+            );
+
+        } else {
+
+            currentMarker =
+                L.marker(position)
+                    .addTo(map)
+                    .bindPopup(
+                        "📍 Your current location"
+                    );
+        }
+
+
+        /*
+         * If no locations have been
+         * selected, center on GPS.
+         */
+
+        if (
+            !pickupLocation &&
+            !destinationLocation
+        ) {
+
+            map.setView(
+                position,
+                15
+            );
+        }
+    }
+
+
+    /* =====================================================
+       USE CURRENT LOCATION
+       ===================================================== */
+
+    function useCurrentLocation() {
+
+        const pickup =
+            document.getElementById("pickup");
+
+        /*
+         * Already have GPS.
+         */
+
+        if (gpsLocation) {
+
+            if (pickup) {
+
+                pickup.value =
+                    "Current location";
+            }
+
+            setLocation(
+                "pickup",
+                gpsLocation.lat,
+                gpsLocation.lng,
+                "Current location"
+            );
+
+            return;
+        }
+
+
+        /*
+         * GPS not ready yet.
+         */
+
+        if (!navigator.geolocation) {
+
+            alert(
+                "Your device does not support location."
+            );
+
+            return;
+        }
+
 
         navigator.geolocation.getCurrentPosition(
 
@@ -151,69 +382,53 @@
                 const lng =
                     position.coords.longitude;
 
-                const current =
-                    [lat, lng];
-
-                if (!map) return;
-
-                if (currentMarker) {
-                    currentMarker.setLatLng(current);
-                } else {
-
-                    currentMarker =
-                        L.marker(current)
-                        .addTo(map)
-                        .bindPopup(
-                            "📍 Your current location"
-                        );
-                }
-
-                /*
-                 * Only zoom to current location
-                 * if no pickup/destination is selected.
-                 */
-
-                if (
-                    !pickupLocation &&
-                    !destinationLocation
-                ) {
-
-                    map.setView(
-                        current,
-                        15
-                    );
-                }
-
-                const pickup =
-                    document.getElementById("pickup");
-
-                if (
-                    pickup &&
-                    !pickup.value.trim()
-                ) {
-
-                    pickup.value =
-                        "Current location";
-                }
+                gpsLocation = {
+                    lat: lat,
+                    lng: lng
+                };
 
                 window.GoRideCurrentLocation = {
                     lat: lat,
                     lng: lng
                 };
+
+
+                if (pickup) {
+
+                    pickup.value =
+                        "Current location";
+                }
+
+
+                setLocation(
+                    "pickup",
+                    lat,
+                    lng,
+                    "Current location"
+                );
+
+
+                updateCurrentMarker();
+
             },
 
             function (error) {
 
-                console.warn(
-                    "Location permission:",
-                    error.message
+                console.error(
+                    "Location error:",
+                    error
                 );
+
+                alert(
+                    "Please allow location permission and try again."
+                );
+
             },
 
             {
                 enableHighAccuracy: true,
-                timeout: 10000,
-                maximumAge: 30000
+                timeout: 15000,
+                maximumAge: 0
             }
         );
     }
@@ -231,20 +446,36 @@
         const destination =
             document.getElementById("destination");
 
+
         if (!pickup || !destination) {
             return;
         }
+
 
         pickup.addEventListener(
             "change",
             function () {
 
-                geocodeLocation(
-                    pickup.value.trim(),
-                    "pickup"
-                );
+                const value =
+                    pickup.value.trim();
+
+                if (
+                    value.toLowerCase() ===
+                    "current location"
+                ) {
+
+                    useCurrentLocation();
+
+                } else {
+
+                    geocodeLocation(
+                        value,
+                        "pickup"
+                    );
+                }
             }
         );
+
 
         destination.addEventListener(
             "change",
@@ -257,31 +488,48 @@
             }
         );
 
-        /*
-         * Also support pressing Enter.
-         */
 
         pickup.addEventListener(
             "keydown",
             function (event) {
 
-                if (event.key === "Enter") {
+                if (
+                    event.key ===
+                    "Enter"
+                ) {
 
                     event.preventDefault();
 
-                    geocodeLocation(
-                        pickup.value.trim(),
-                        "pickup"
-                    );
+                    const value =
+                        pickup.value.trim();
+
+                    if (
+                        value.toLowerCase() ===
+                        "current location"
+                    ) {
+
+                        useCurrentLocation();
+
+                    } else {
+
+                        geocodeLocation(
+                            value,
+                            "pickup"
+                        );
+                    }
                 }
             }
         );
+
 
         destination.addEventListener(
             "keydown",
             function (event) {
 
-                if (event.key === "Enter") {
+                if (
+                    event.key ===
+                    "Enter"
+                ) {
 
                     event.preventDefault();
 
@@ -304,12 +552,10 @@
         type
     ) {
 
-        if (!query) return;
+        if (!query) {
+            return;
+        }
 
-        /*
-         * If user selects current location,
-         * use browser GPS.
-         */
 
         if (
             type === "pickup" &&
@@ -317,24 +563,11 @@
             "current location"
         ) {
 
-            if (
-                window.GoRideCurrentLocation
-            ) {
-
-                setLocation(
-                    "pickup",
-                    window.GoRideCurrentLocation.lat,
-                    window.GoRideCurrentLocation.lng,
-                    "Current location"
-                );
-
-            } else {
-
-                getCurrentLocation();
-            }
+            useCurrentLocation();
 
             return;
         }
+
 
         try {
 
@@ -345,39 +578,46 @@
                 "&q=" +
                 encodeURIComponent(query);
 
+
             const response =
                 await fetch(url);
 
+
             if (!response.ok) {
+
                 throw new Error(
                     "Geocoding failed"
                 );
             }
 
+
             const results =
                 await response.json();
+
 
             if (
                 !results ||
                 !results.length
             ) {
 
-                console.warn(
-                    "Location not found:",
-                    query
+                alert(
+                    "Location not found. Try a more specific area name."
                 );
 
                 return;
             }
 
+
             const result =
                 results[0];
+
 
             const lat =
                 Number(result.lat);
 
             const lng =
                 Number(result.lon);
+
 
             setLocation(
                 type,
@@ -386,18 +626,23 @@
                 result.display_name
             );
 
+
         } catch (error) {
 
             console.error(
                 "Geocoding error:",
                 error
             );
+
+            alert(
+                "Unable to find this location. Please check your internet connection."
+            );
         }
     }
 
 
     /* =====================================================
-       SET PICKUP / DESTINATION
+       SET LOCATION
        ===================================================== */
 
     function setLocation(
@@ -407,61 +652,68 @@
         name
     ) {
 
-        if (!map) return;
+        /*
+         * Save location FIRST.
+         * Don't wait for map.
+         */
 
         const location = {
-            lat: lat,
-            lng: lng,
-            name: name
+
+            lat: Number(lat),
+
+            lng: Number(lng),
+
+            name:
+                name ||
+                "Selected location"
         };
+
 
         if (type === "pickup") {
 
-            pickupLocation = location;
-
-            if (pickupMarker) {
-                pickupMarker.setLatLng(
-                    [lat, lng]
-                );
-            } else {
-
-                pickupMarker =
-                    L.marker([lat, lng])
-                    .addTo(map)
-                    .bindPopup(
-                        "📍 Pickup"
-                    );
-            }
+            pickupLocation =
+                location;
 
         } else {
 
             destinationLocation =
                 location;
-
-            if (destinationMarker) {
-                destinationMarker.setLatLng(
-                    [lat, lng]
-                );
-            } else {
-
-                destinationMarker =
-                    L.marker([lat, lng])
-                    .addTo(map)
-                    .bindPopup(
-                        "🏁 Destination"
-                    );
-            }
         }
 
+
         /*
-         * Show both points on screen.
+         * Make location available
+         * to booking.js immediately.
          */
+
+        window.GoRideRouteLocations = {
+
+            pickup:
+                pickupLocation,
+
+            destination:
+                destinationLocation
+        };
+
+
+        /*
+         * If Leaflet isn't ready yet,
+         * stop here. The location is still saved.
+         */
+
+        if (!map || !window.L) {
+            return;
+        }
+
+
+        updateLocationMarker(
+            type,
+            location
+        );
+
 
         fitLocations();
 
-        /*
-         * Draw route when both are available.
-         */
 
         if (
             pickupLocation &&
@@ -470,28 +722,76 @@
 
             drawRoute();
         }
-
-        /*
-         * Tell booking.js about
-         * the real distance.
-         */
-
-        window.GoRideRouteLocations = {
-            pickup: pickupLocation,
-            destination: destinationLocation
-        };
     }
 
 
     /* =====================================================
+       UPDATE LOCATION MARKER
+       ===================================================== */
+
+    function updateLocationMarker(
+        type,
+        location
+    ) {
+
+        const point = [
+            location.lat,
+            location.lng
+        ];
+
+
+        if (type === "pickup") {
+
+            if (pickupMarker) {
+
+                pickupMarker.setLatLng(
+                    point
+                );
+
+            } else {
+
+                pickupMarker =
+                    L.marker(point)
+                        .addTo(map)
+                        .bindPopup(
+                            "📍 Pickup"
+                        );
+            }
+
+        } else {
+
+            if (destinationMarker) {
+
+                destinationMarker.setLatLng(
+                    point
+                );
+
+            } else {
+
+                destinationMarker =
+                    L.marker(point)
+                        .addTo(map)
+                        .bindPopup(
+                            "🏁 Destination"
+                        );
+            }
+        }
+                           }
+
+
+     /* =====================================================
        FIT MAP TO LOCATIONS
        ===================================================== */
 
     function fitLocations() {
 
-        if (!map) return;
+        if (!map) {
+            return;
+        }
+
 
         const points = [];
+
 
         if (pickupLocation) {
 
@@ -501,6 +801,7 @@
             ]);
         }
 
+
         if (destinationLocation) {
 
             points.push([
@@ -508,6 +809,7 @@
                 destinationLocation.lng
             ]);
         }
+
 
         if (points.length === 1) {
 
@@ -521,7 +823,10 @@
             map.fitBounds(
                 L.latLngBounds(points),
                 {
-                    padding: [40, 40]
+                    padding: [
+                        40,
+                        40
+                    ]
                 }
             );
         }
@@ -529,17 +834,18 @@
 
 
     /* =====================================================
-       DRAW REAL ROUTE
+       DRAW REAL ROAD ROUTE
        ===================================================== */
 
     async function drawRoute() {
 
         if (
             !pickupLocation ||
-            !destinationLocation 
+            !destinationLocation
         ) {
             return;
         }
+
 
         const start =
             pickupLocation;
@@ -547,37 +853,49 @@
         const end =
             destinationLocation;
 
+
         try {
 
             const url =
                 "https://router.project-osrm.org/route/v1/driving/" +
-                start.lng + "," +
-                start.lat + ";" +
-                end.lng + "," +
+                start.lng +
+                "," +
+                start.lat +
+                ";" +
+                end.lng +
+                "," +
                 end.lat +
                 "?overview=full&geometries=geojson";
+
 
             const response =
                 await fetch(url);
 
+
             if (!response.ok) {
+
                 throw new Error(
                     "Routing failed"
                 );
             }
 
+
             const data =
                 await response.json();
+
 
             if (
                 !data.routes ||
                 !data.routes.length
             ) {
+
                 return;
             }
 
+
             const route =
                 data.routes[0];
+
 
             /*
              * Remove old route.
@@ -590,6 +908,7 @@
                 );
             }
 
+
             routeLine =
                 L.geoJSON(
                     route.geometry,
@@ -601,15 +920,17 @@
                     }
                 ).addTo(map);
 
+
             /*
-             * Actual road distance.
+             * Real road distance.
              */
 
             const distanceKm =
                 route.distance / 1000;
 
+
             /*
-             * Actual route duration.
+             * Real road duration.
              */
 
             const durationMin =
@@ -619,6 +940,7 @@
                         route.duration / 60
                     )
                 );
+
 
             window.GoRideRealRoute = {
 
@@ -637,9 +959,9 @@
                     end
             };
 
+
             /*
-             * Update dashboard values
-             * immediately if elements exist.
+             * Update UI.
              */
 
             const distance =
@@ -652,12 +974,14 @@
                     "time"
                 );
 
+
             if (distance) {
 
                 distance.textContent =
                     distanceKm.toFixed(1) +
                     " km";
             }
+
 
             if (time) {
 
@@ -666,8 +990,10 @@
                     " min";
             }
 
+
             /*
-             * Let booking.js recalculate fare.
+             * Tell booking.js to
+             * calculate the fare.
              */
 
             if (
@@ -677,6 +1003,7 @@
 
                 window.estimate();
             }
+
 
         } catch (error) {
 
@@ -689,40 +1016,70 @@
 
 
     /* =====================================================
-       PUBLIC FUNCTIONS
+       PUBLIC API
        ===================================================== */
 
     window.GoRideMap = {
 
-        init: initMap,
+        init:
+            initMap,
 
         getCurrentLocation:
             getCurrentLocation,
 
+        useCurrentLocation:
+            useCurrentLocation,
+
         geocode:
             geocodeLocation,
 
-        getPickup: function () {
-            return pickupLocation;
-        },
+        getPickup:
+            function () {
+                return pickupLocation;
+            },
 
-        getDestination: function () {
-            return destinationLocation;
-        },
+        getDestination:
+            function () {
+                return destinationLocation;
+            },
 
-        getRoute: function () {
-            return window.GoRideRealRoute || null;
-        }
+        getRoute:
+            function () {
+
+                return (
+                    window.GoRideRealRoute ||
+                    null
+                );
+            }
     };
 
 
     /*
-     * Initialize automatically.
+     * Easy global function for HTML.
      */
+
+    window.useCurrentLocation =
+        useCurrentLocation;
+
+
+    /* =====================================================
+       INITIALIZE
+       ===================================================== */
 
     document.addEventListener(
         "DOMContentLoaded",
         function () {
+
+            /*
+             * Start GPS immediately.
+             */
+
+            getCurrentLocation();
+
+            /*
+             * Start map separately.
+             */
+
             initMap();
         }
     );
