@@ -295,6 +295,21 @@
                     placeholder="Enter pickup location"
                     oninput="estimate()">
             </div>
+            <button
+    type="button"
+    onclick="useCurrentLocation()"
+    style="
+        margin-top:8px;
+        border:0;
+        background:#eee8ff;
+        color:#6d28d9;
+        padding:9px 12px;
+        border-radius:10px;
+        font-weight:700;
+        cursor:pointer;
+    ">
+    📍 Use Current Location
+</button>
         </div>
 
         <div class="location-box">
@@ -310,6 +325,7 @@
                     placeholder="Where do you want to go?"
                     oninput="estimate()">
             </div>
+
         </div>
 
         <h3 class="section-title">Choose your ride</h3>
