@@ -462,331 +462,682 @@
 
 
 <!-- SOCKET.IO -->
+    
+<!-- =====================================================
+     SOCKET.IO
+     ===================================================== -->
 
 <script src="https://cdn.socket.io/4.8.0/socket.io.min.js"></script>
 
-
-<!-- APP -->
-
 <script src="../js/app.js"></script>
-    <script src="https://cdn.socket.io/4.8.0/socket.io.min.js"></script>
+<script src="../js/map.js"></script>
 
-    <script src="../js/app.js"></script>
-    <script src="../js/map.js"></script>
 
-    <script>
+<script>
 
-        /* =====================================================
-           ACTIVE RIDE
-           ===================================================== */
+const API_BASE =
+    window.GORIDE_API ||
+    window.API_BASE_URL ||
+    localStorage.getItem("API_BASE_URL") ||
+    "https://ride-f6la.onrender.com";
 
-        const rideInfo =
-            document.getElementById("rideInfo");
 
-        let activeRide = JSON.parse(
-            localStorage.getItem("goride_active_ride") ||
-            "null"
+/* =====================================================
+   AUTH HEADERS
+   ===================================================== */
+
+function authHeaders() {
+
+    const token =
+        localStorage.getItem("token") ||
+        localStorage.getItem("goride_token") ||
+        "";
+
+    return {
+        "Content-Type": "application/json",
+
+        ...(token
+            ? {
+                Authorization:
+                    "Bearer " + token
+            }
+            : {})
+    };
+}
+
+
+/* =====================================================
+   ACTIVE RIDE
+   ===================================================== */
+
+let activeRide =
+    JSON.parse(
+        localStorage.getItem(
+            "goride_active_ride"
+        ) || "null"
+    );
+
+
+/* =====================================================
+   SHOW RIDE INFORMATION
+   ===================================================== */
+
+function renderRideInfo() {
+
+    if (!activeRide) {
+
+        document.getElementById(
+            "pickup"
+        ).textContent = "--";
+
+        document.getElementById(
+            "destination"
+        ).textContent = "--";
+
+        document.getElementById(
+            "vehicle"
+        ).textContent = "--";
+
+        document.getElementById(
+            "distance"
+        ).textContent = "--";
+
+        document.getElementById(
+            "fare"
+        ).textContent = "₹--";
+
+        return;
+    }
+
+
+    document.getElementById(
+        "pickup"
+    ).textContent =
+        activeRide.pickup?.name ||
+        "Pickup location";
+
+
+    document.getElementById(
+        "destination"
+    ).textContent =
+        activeRide.destination?.name ||
+        "Destination";
+
+
+    document.getElementById(
+        "vehicle"
+    ).textContent =
+        activeRide.vehicleType ||
+        "--";
+
+
+    document.getElementById(
+        "distance"
+    ).textContent =
+        activeRide.distance
+            ? Number(
+                activeRide.distance
+            ).toFixed(1) + " km"
+            : "--";
+
+
+    document.getElementById(
+        "fare"
+    ).textContent =
+        activeRide.fare
+            ? "₹" +
+              Math.round(
+                  activeRide.fare
+              )
+            : "₹--";
+}
+
+
+/* =====================================================
+   STATUS DISPLAY
+   ===================================================== */
+
+function updateStatusText(status) {
+
+    const statusElement =
+        document.getElementById(
+            "rideStatus"
+        );
+
+    const messageElement =
+        document.getElementById(
+            "statusMessage"
         );
 
 
-        /* =====================================================
-           SHOW RIDE INFORMATION
-           ===================================================== */
+    if (!statusElement) {
+        return;
+    }
 
-        function renderRideInfo() {
 
-            if (!rideInfo) return;
+    const messages = {
 
-            if (!activeRide) {
+        SEARCHING_DRIVER: {
+            title:
+                "Searching for driver...",
+            message:
+                "Your ride request has been sent to nearby drivers."
+        },
 
-                rideInfo.innerHTML = `
-                    <div class="stat">
-                        <span>Status</span>
-                        <b>Waiting for ride...</b>
-                    </div>
-                `;
+        DRIVER_ASSIGNED: {
+            title:
+                "Driver assigned",
+            message:
+                "A driver has accepted your ride."
+        },
+
+        DRIVER_ARRIVING: {
+            title:
+                "Driver is arriving",
+            message:
+                "Your driver is on the way to the pickup location."
+        },
+
+        DRIVER_AT_PICKUP: {
+            title:
+                "Driver is at pickup",
+            message:
+                "Your driver has reached the pickup location."
+        },
+
+        RIDE_STARTED: {
+            title:
+                "Ride in progress",
+            message:
+                "Your ride has started."
+        },
+
+        RIDE_COMPLETED: {
+            title:
+                "Ride completed",
+            message:
+                "Your ride has been completed successfully."
+        },
+
+        CANCELLED: {
+            title:
+                "Ride cancelled",
+            message:
+                "This ride has been cancelled."
+        }
+    };
+
+
+    const current =
+        messages[status] || {
+
+            title:
+                "Live Ride",
+
+            message:
+                "Ride status is being updated."
+        };
+
+
+    statusElement.textContent =
+        current.title;
+
+
+    if (messageElement) {
+
+        messageElement.textContent =
+            current.message;
+    }
+
+
+    /* =================================================
+       CANCEL BUTTON
+       ================================================= */
+
+    const cancelBtn =
+        document.getElementById(
+            "cancelBtn"
+        );
+
+
+    if (cancelBtn) {
+
+        if (
+            status === "CANCELLED" ||
+            status === "RIDE_COMPLETED"
+        ) {
+
+            cancelBtn.classList.add(
+                "hidden"
+            );
+
+        } else {
+
+            cancelBtn.classList.remove(
+                "hidden"
+            );
+        }
+    }
+}
+
+
+/* =====================================================
+   CANCEL RIDE
+   ===================================================== */
+
+async function cancelRide() {
+
+    if (!activeRide || !activeRide._id) {
+
+        alert(
+            "No active ride found."
+        );
+
+        return;
+    }
+
+
+    if (
+        activeRide.status ===
+        "RIDE_COMPLETED"
+    ) {
+
+        alert(
+            "This ride is already completed."
+        );
+
+        return;
+    }
+
+
+    if (
+        activeRide.status ===
+        "CANCELLED"
+    ) {
+
+        return;
+    }
+
+
+    const confirmed =
+        confirm(
+            "Are you sure you want to cancel this ride?"
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    const cancelBtn =
+        document.getElementById(
+            "cancelBtn"
+        );
+
+
+    if (cancelBtn) {
+
+        cancelBtn.disabled = true;
+
+        cancelBtn.textContent =
+            "Cancelling...";
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                API_BASE +
+                "/api/rides/" +
+                activeRide._id +
+                "/status",
+                {
+                    method: "POST",
+
+                    headers:
+                        authHeaders(),
+
+                    body:
+                        JSON.stringify({
+                            status:
+                                "CANCELLED"
+                        })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !data.success
+        ) {
+
+            throw new Error(
+                data.message ||
+                "Unable to cancel ride"
+            );
+        }
+
+
+        /* =============================================
+           UPDATE LOCAL RIDE
+           ============================================= */
+
+        activeRide =
+            data.ride;
+
+
+        localStorage.setItem(
+            "goride_active_ride",
+            JSON.stringify(
+                activeRide
+            )
+        );
+
+
+        updateStatusText(
+            "CANCELLED"
+        );
+
+
+        /*
+         * Give Socket.IO time to notify
+         * the driver before leaving.
+         */
+
+        setTimeout(
+            function () {
+
+                localStorage.removeItem(
+                    "goride_active_ride"
+                );
+
+                window.location.href =
+                    "dashboard.html";
+
+            },
+            1200
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Cancel ride error:",
+            error
+        );
+
+
+        alert(
+            error.message ||
+            "Unable to cancel ride."
+        );
+
+
+        if (cancelBtn) {
+
+            cancelBtn.disabled =
+                false;
+
+            cancelBtn.textContent =
+                "❌ Cancel Ride";
+        }
+    }
+}
+
+
+/* =====================================================
+   SOCKET CONNECTION
+   ===================================================== */
+
+let socket = null;
+
+
+if (
+    typeof io === "function"
+) {
+
+    socket =
+        io(
+            API_BASE,
+            {
+                transports: [
+                    "websocket",
+                    "polling"
+                ]
+            }
+        );
+
+
+    /* =================================================
+       SOCKET CONNECT
+       ================================================= */
+
+    socket.on(
+        "connect",
+        function () {
+
+            console.log(
+                "GoRide passenger socket connected:",
+                socket.id
+            );
+
+
+            const user =
+                JSON.parse(
+                    localStorage.getItem(
+                        "user"
+                    ) ||
+                    localStorage.getItem(
+                        "goride_user"
+                    ) ||
+                    "null"
+                );
+
+
+            const userId =
+                user?.id ||
+                user?._id;
+
+
+            if (userId) {
+
+                socket.emit(
+                    "join:user",
+                    userId
+                );
+            }
+        }
+    );
+
+
+    /* =================================================
+       RIDE UPDATE
+       ================================================= */
+
+    socket.on(
+        "ride:update",
+        function (ride) {
+
+            if (!ride || !ride._id) {
+                return;
+            }
+
+
+            if (
+                !activeRide ||
+                String(ride._id) !==
+                String(activeRide._id)
+            ) {
 
                 return;
             }
 
 
-            rideInfo.innerHTML = `
-
-                <div class="stat">
-                    <span>Vehicle</span>
-                    <b>
-                        ${activeRide.vehicleType || "—"}
-                    </b>
-                </div>
-
-                <div class="stat">
-                    <span>Distance</span>
-                    <b>
-                        ${
-                            activeRide.distance
-                            ? Number(activeRide.distance).toFixed(1) + " km"
-                            : "—"
-                        }
-                    </b>
-                </div>
-
-                <div class="stat">
-                    <span>Fare</span>
-                    <b>
-                        ${
-                            activeRide.fare
-                            ? "₹" + Math.round(activeRide.fare)
-                            : "—"
-                        }
-                    </b>
-                </div>
-
-                <div class="stat">
-                    <span>Status</span>
-                    <b id="liveStatus">
-                        ${activeRide.status || "SEARCHING_DRIVER"}
-                    </b>
-                </div>
-
-            `;
-        }
-
-
-        renderRideInfo();
-
-
-        /* =====================================================
-           SOCKET CONNECTION
-           ===================================================== */
-
-        const API_BASE =
-            window.GORIDE_API ||
-            window.API_BASE_URL ||
-            localStorage.getItem("API_BASE_URL") ||
-            "https://ride-f6la.onrender.com";
-
-
-        let socket = null;
-
-
-        if (typeof io === "function") {
-
-            socket = io(API_BASE, {
-                transports: ["websocket", "polling"]
-            });
-
-
-            socket.on(
-                "connect",
-                function () {
-
-                    console.log(
-                        "GoRide passenger socket connected"
-                    );
-
-                    const user =
-                        JSON.parse(
-                            localStorage.getItem("user") ||
-                            localStorage.getItem("goride_user") ||
-                            "null"
-                        );
-
-
-                    const userId =
-                        user?.id ||
-                        user?._id;
-
-
-                    if (userId) {
-
-                        socket.emit(
-                            "join:user",
-                            userId
-                        );
-                    }
-                }
+            console.log(
+                "Passenger ride update:",
+                ride
             );
 
 
-            /* =================================================
-               RIDE UPDATE
-               ================================================= */
-
-            socket.on(
-                "ride:update",
-                function (ride) {
-
-                    if (!activeRide) return;
+            activeRide =
+                ride;
 
 
-                    if (
-                        String(ride._id) !==
-                        String(activeRide._id)
-                    ) {
-                        return;
-                    }
-
-
-                    activeRide = ride;
-
-
-                    localStorage.setItem(
-                        "goride_active_ride",
-                        JSON.stringify(activeRide)
-                    );
-
-
-                    renderRideInfo();
-
-
-                    updateStatusText(
-                        ride.status
-                    );
-
-
-                    console.log(
-                        "Ride updated:",
-                        ride
-                    );
-
-
-                    if (
-                        ride.status ===
-                        "RIDE_COMPLETED"
-                    ) {
-
-                        setTimeout(
-                            function () {
-
-                                window.location.href =
-                                    "ride-history.html";
-
-                            },
-                            1500
-                        );
-                    }
-
-
-                    if (
-                        ride.status ===
-                        "CANCELLED"
-                    ) {
-
-                        setTimeout(
-                            function () {
-
-                                window.location.href =
-                                    "dashboard.html";
-
-                            },
-                            1500
-                        );
-                    }
-                }
+            localStorage.setItem(
+                "goride_active_ride",
+                JSON.stringify(
+                    activeRide
+                )
             );
 
 
-            /* =================================================
-               DRIVER LOCATION
-               ================================================= */
+            renderRideInfo();
 
-            socket.on(
-                "driver:location",
-                function (data) {
-
-                    console.log(
-                        "Driver location:",
-                        data
-                    );
-
-                    /*
-                     * map.js can use this later
-                     * for live driver marker.
-                     */
-
-                    window.GoRideDriverLocation =
-                        data;
-                }
-            );
-
-
-            socket.on(
-                "disconnect",
-                function () {
-
-                    console.log(
-                        "GoRide socket disconnected"
-                    );
-                }
-            );
-        }
-
-
-        /* =====================================================
-           STATUS DISPLAY
-           ===================================================== */
-
-        function updateStatusText(status) {
-
-            const statusElement =
-                document.querySelector(
-                    ".status"
-                );
-
-            if (!statusElement) return;
-
-
-            const messages = {
-
-                SEARCHING_DRIVER:
-                    "● FINDING DRIVER",
-
-                DRIVER_ASSIGNED:
-                    "● DRIVER ASSIGNED",
-
-                DRIVER_ARRIVING:
-                    "● DRIVER ARRIVING",
-
-                DRIVER_AT_PICKUP:
-                    "● DRIVER AT PICKUP",
-
-                RIDE_STARTED:
-                    "● RIDE IN PROGRESS",
-
-                RIDE_COMPLETED:
-                    "● RIDE COMPLETED",
-
-                CANCELLED:
-                    "● RIDE CANCELLED"
-            };
-
-
-            statusElement.textContent =
-                messages[status] ||
-                "● LIVE RIDE";
-        }
-
-
-        if (activeRide) {
 
             updateStatusText(
-                activeRide.status
+                ride.status
+            );
+
+
+            /* =========================================
+               RIDE COMPLETED
+               ========================================= */
+
+            if (
+                ride.status ===
+                "RIDE_COMPLETED"
+            ) {
+
+                setTimeout(
+                    function () {
+
+                        localStorage.removeItem(
+                            "goride_active_ride"
+                        );
+
+                        window.location.href =
+                            "ride-history.html";
+
+                    },
+                    1500
+                );
+            }
+
+
+            /* =========================================
+               RIDE CANCELLED
+               ========================================= */
+
+            if (
+                ride.status ===
+                "CANCELLED"
+            ) {
+
+                setTimeout(
+                    function () {
+
+                        localStorage.removeItem(
+                            "goride_active_ride"
+                        );
+
+                        window.location.href =
+                            "dashboard.html";
+
+                    },
+                    1200
+                );
+            }
+        }
+    );
+
+
+    /* =================================================
+       DRIVER LOCATION
+       ================================================= */
+
+    socket.on(
+        "driver:location",
+        function (data) {
+
+            console.log(
+                "Driver location:",
+                data
+            );
+
+
+            window.GoRideDriverLocation =
+                data;
+        }
+    );
+
+
+    /* =================================================
+       SOCKET DISCONNECT
+       ================================================= */
+
+    socket.on(
+        "disconnect",
+        function () {
+
+            console.log(
+                "GoRide passenger socket disconnected"
             );
         }
+    );
+}
 
 
-        /* =====================================================
-           BACK TO DASHBOARD
-           ===================================================== */
+/* =====================================================
+   BACK TO DASHBOARD
+   ===================================================== */
 
-        function goDashboard() {
+function goDashboard() {
 
-            window.location.href =
-                "dashboard.html";
-        }
+    window.location.href =
+        "dashboard.html";
+}
 
-    </script>
+
+/* =====================================================
+   INITIAL LOAD
+   ===================================================== */
+
+renderRideInfo();
+
+
+if (activeRide) {
+
+    updateStatusText(
+        activeRide.status ||
+        "SEARCHING_DRIVER"
+    );
+
+} else {
+
+    updateStatusText(
+        "SEARCHING_DRIVER"
+    );
+}
+
+
+/* =====================================================
+   PUBLIC FUNCTION
+   ===================================================== */
+
+window.cancelRide =
+    cancelRide;
+
+window.goDashboard =
+    goDashboard;
+
+</script>
 
 </body>
 </html>
-    
+                
