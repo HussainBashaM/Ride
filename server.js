@@ -340,18 +340,18 @@ function fare(
     const rates = {
 
         Bike: {
-            base: 25,
-            km: 9
+            base: 10,
+            km: 5
         },
 
         Auto: {
-            base: 35,
-            km: 13
+            base: 15,
+            km: 7
         },
 
         Car: {
-            base: 55,
-            km: 18
+            base: 25,
+            km: 10
         }
 
     };
@@ -366,6 +366,50 @@ function fare(
         r.base +
         distance * r.km
     );
+}
+
+/* =========================================================
+   DISTANCE BETWEEN TWO GPS LOCATIONS
+   ========================================================= */
+
+function distanceBetweenPoints(
+    lat1,
+    lng1,
+    lat2,
+    lng2
+) {
+
+    const R = 6371; // Earth radius in KM
+
+    const dLat =
+        (lat2 - lat1) *
+        Math.PI / 180;
+
+    const dLng =
+        (lng2 - lng1) *
+        Math.PI / 180;
+
+    const a =
+        Math.sin(dLat / 2) *
+        Math.sin(dLat / 2) +
+
+        Math.cos(
+            lat1 * Math.PI / 180
+        ) *
+        Math.cos(
+            lat2 * Math.PI / 180
+        ) *
+        Math.sin(dLng / 2) *
+        Math.sin(dLng / 2);
+
+    const c =
+        2 *
+        Math.atan2(
+            Math.sqrt(a),
+            Math.sqrt(1 - a)
+        );
+
+    return R * c;
 }
 
 
@@ -1187,6 +1231,11 @@ app.post(
    CREATE RIDE
    ========================================================= */
 
+/* =========================================================
+   CREATE RIDE
+   SEND ONLY TO NEARBY ONLINE DRIVERS
+   ========================================================= */
+
 app.post(
     "/api/rides",
     auth,
@@ -1203,9 +1252,9 @@ app.post(
             } = req.body;
 
 
-            const d =
-                Number(distance) || 0;
-
+            /* ---------------------------------------------
+               VALIDATE PICKUP / DESTINATION
+               --------------------------------------------- */
 
             if (
                 !pickup ||
@@ -1226,7 +1275,55 @@ app.post(
             }
 
 
-            if (d <= 0) {
+            /* ---------------------------------------------
+               PICKUP GPS REQUIRED
+               --------------------------------------------- */
+
+            const pickupLat =
+                Number(
+                    pickup.lat
+                );
+
+            const pickupLng =
+                Number(
+                    pickup.lng
+                );
+
+
+            if (
+                !Number.isFinite(
+                    pickupLat
+                ) ||
+                !Number.isFinite(
+                    pickupLng
+                )
+            ) {
+
+                return res
+                    .status(400)
+                    .json({
+
+                        success: false,
+
+                        message:
+                            "Valid pickup latitude and longitude are required"
+
+                    });
+
+            }
+
+
+            /* ---------------------------------------------
+               DISTANCE
+               --------------------------------------------- */
+
+            const rideDistance =
+                Number(distance) || 0;
+
+
+            if (
+                rideDistance <= 0
+            ) {
 
                 return res
                     .status(400)
@@ -1243,12 +1340,12 @@ app.post(
 
 
             /* ---------------------------------------------
-               SERVER-SIDE FARE
+               SERVER SIDE FARE
                --------------------------------------------- */
 
             const serverFare =
                 fare(
-                    d,
+                    rideDistance,
                     vehicleType
                 );
 
@@ -1270,7 +1367,7 @@ app.post(
                     vehicleType,
 
                     distance:
-                        d,
+                        rideDistance,
 
                     estimatedTime:
                         Number(
@@ -1287,22 +1384,179 @@ app.post(
 
 
             /* ---------------------------------------------
-               SEND NEW RIDE TO DRIVERS
+               FIND ONLINE DRIVERS
                --------------------------------------------- */
 
-            io.emit(
-                "ride:new",
-                ride
+            const drivers =
+                await Driver.find({
+
+                    online: true
+
+                });
+
+
+            /*
+             * Maximum distance from pickup.
+             *
+             * 10 KM is a good starting
+             * value for testing.
+             */
+
+            const MAX_DRIVER_DISTANCE =
+                10;
+
+
+            let nearbyDrivers = [];
+
+
+            /* ---------------------------------------------
+               CHECK EACH DRIVER DISTANCE
+               --------------------------------------------- */
+
+            for (
+                const driver
+                of drivers
+            ) {
+
+                if (
+                    !driver.location ||
+                    !Number.isFinite(
+                        Number(
+                            driver.location.lat
+                        )
+                    ) ||
+                    !Number.isFinite(
+                        Number(
+                            driver.location.lng
+                        )
+                    )
+                ) {
+
+                    continue;
+                }
+
+
+                const driverDistance =
+                    distanceBetweenPoints(
+
+                        pickupLat,
+
+                        pickupLng,
+
+                        Number(
+                            driver.location.lat
+                        ),
+
+                        Number(
+                            driver.location.lng
+                        )
+
+                    );
+
+
+                if (
+                    driverDistance <=
+                    MAX_DRIVER_DISTANCE
+                ) {
+
+                    nearbyDrivers.push({
+
+                        driver,
+
+                        distance:
+                            driverDistance
+
+                    });
+
+                }
+
+            }
+
+
+            /* ---------------------------------------------
+               SORT NEAREST DRIVER FIRST
+               --------------------------------------------- */
+
+            nearbyDrivers.sort(
+                function (a, b) {
+
+                    return (
+                        a.distance -
+                        b.distance
+                    );
+
+                }
             );
 
+
+            /* ---------------------------------------------
+               SEND RIDE ONLY TO NEARBY DRIVERS
+               --------------------------------------------- */
+
+            for (
+                const item
+                of nearbyDrivers
+            ) {
+
+                io.to(
+                    `driver:${item.driver.userId}`
+                ).emit(
+                    "ride:new",
+                    ride
+                );
+
+            }
+
+
+            /* ---------------------------------------------
+               LOG MATCHING INFORMATION
+               --------------------------------------------- */
+
+            console.log(
+                "New ride:",
+                ride._id.toString()
+            );
+
+            console.log(
+                "Nearby drivers:",
+                nearbyDrivers.length
+            );
+
+
+            for (
+                const item
+                of nearbyDrivers
+            ) {
+
+                console.log(
+
+                    "Driver:",
+                    item.driver.userId.toString(),
+
+                    "Distance:",
+                    item.distance.toFixed(2),
+                    "KM"
+
+                );
+
+            }
+
+
+            /* ---------------------------------------------
+               RESPONSE
+               --------------------------------------------- */
 
             res.json({
 
                 success: true,
 
-                ride
+                ride,
+
+                nearbyDrivers:
+                    nearbyDrivers.length
 
             });
+
 
         } catch (error) {
 
