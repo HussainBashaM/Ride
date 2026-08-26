@@ -1527,185 +1527,102 @@ app.post(
    ACCEPT RIDE
    ========================================================= */
 
-app.post(
-    "/api/rides/:id/accept",
-    auth,
-    async function (req, res) {
-
-        try {
-
-            /* ---------------------------------------------
-               DRIVER ONLY
-               --------------------------------------------- */
-
-            if (req.auth.role !== "driver") {
-
-                return res
-                    .status(403)
-                    .json({
-
-                        success: false,
-
-                        message:
-                            "Only drivers can accept rides"
-
-                    });
-
-            }
-
-
-            /* ---------------------------------------------
-               CHECK DRIVER PROFILE
-               --------------------------------------------- */
-
-            const driver =
-                await Driver.findOne({
-
-                    userId:
-                        req.auth.id
-
-                });
-
-
-            if (!driver) {
-
-                return res
-                    .status(404)
-                    .json({
-
-                        success: false,
-
-                        message:
-                            "Driver profile not found"
-
-                    });
-
-            }
-
-
-            /* ---------------------------------------------
-               DRIVER SHOULD BE ONLINE
-               --------------------------------------------- */
-
-            if (!driver.online) {
-
-                return res
-                    .status(400)
-                    .json({
-
-                        success: false,
-
-                        message:
-                            "Go online before accepting rides"
-
-                    });
-
-            }
-
-
-            /* ---------------------------------------------
-               ACCEPT ONLY SEARCHING RIDES
-               --------------------------------------------- */
-
-            const ride =
-                await Ride.findOneAndUpdate(
-
-                    {
-                        _id:
-                            req.params.id,
-
-                        status:
-                            "SEARCHING_DRIVER"
-
-                    },
-
-                    {
-
-                        driverId:
-                            req.auth.id,
-
-                        status:
-                            "DRIVER_ASSIGNED"
-
-                    },
-
-                    {
-                        new: true
-                    }
-
-                );
-
-
-            if (!ride) {
-
-                return res
-                    .status(409)
-                    .json({
-
-                        success: false,
-
-                        message:
-                            "Ride is no longer available"
-
-                    });
-
-            }
-
-
-            /* ---------------------------------------------
-               UPDATE DRIVER SOCKET ROOM
-               --------------------------------------------- */
-
-            io.to(
-                `user:${ride.passengerId}`
-            ).emit(
-                "ride:update",
-                ride
-            );
-
-
-            /* ---------------------------------------------
-               BROADCAST RIDE UPDATE
-               --------------------------------------------- */
-
-            io.emit(
-                "ride:update",
-                ride
-            );
-
-
-            res.json({
-
-                success: true,
-
-                ride
-
-            });
-
-        } catch (error) {
-
-            console.error(
-                "Accept ride error:",
-                error
-            );
-
-
-            res
-                .status(500)
-                .json({
-
-                    success: false,
-
-                    message:
-                        error.message
-
-                });
-
-        }
-
+app.post("/api/rides/:id/accept", auth, async (req, res) => {
+  try {
+
+    // Make sure the logged-in user is a driver
+    if (req.auth.role !== "driver") {
+      return res.status(403).json({
+        success: false,
+        message: "Only drivers can accept rides"
+      });
     }
-);
 
+    // Find the driver profile
+    const driver = await Driver.findOne({
+      userId: req.auth.id
+    });
+
+    if (!driver) {
+      return res.status(404).json({
+        success: false,
+        message: "Driver profile not found"
+      });
+    }
+
+    // Driver must be online
+    if (!driver.online) {
+      return res.status(400).json({
+        success: false,
+        message: "Go online before accepting rides"
+      });
+    }
+
+    // Accept only a searching ride
+    const ride = await Ride.findOneAndUpdate(
+      {
+        _id: req.params.id,
+        status: "SEARCHING_DRIVER"
+      },
+      {
+        driverId: req.auth.id,
+        status: "DRIVER_ASSIGNED"
+      },
+      {
+        new: true
+      }
+    );
+
+    if (!ride) {
+      return res.status(409).json({
+        success: false,
+        message: "Ride is no longer available"
+      });
+    }
+
+
+    /* =====================================================
+       SEND UPDATE TO PASSENGER
+       ===================================================== */
+
+    io.to(`user:${ride.passengerId}`).emit(
+      "ride:update",
+      ride
+    );
+
+
+    /* =====================================================
+       SEND GLOBAL UPDATE
+       ===================================================== */
+
+    io.emit(
+      "ride:update",
+      ride
+    );
+
+
+    /* =====================================================
+       RESPONSE TO DRIVER
+       ===================================================== */
+
+    res.json({
+      success: true,
+      ride
+    });
+
+  } catch (error) {
+
+    console.error(
+      "Accept ride error:",
+      error
+    );
+
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
 
 /* =========================================================
    UPDATE RIDE STATUS
