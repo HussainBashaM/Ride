@@ -1780,203 +1780,29 @@ app.post(
 /* =========================================================
    ACCEPT RIDE
    ========================================================= */
-
-app.post("/api/rides/:id/accept", auth, async (req, res) => {
-  try {
-
-    // Make sure the logged-in user is a driver
-    if (req.auth.role !== "driver") {
-      return res.status(403).json({
-        success: false,
-        message: "Only drivers can accept rides"
-      });
-    }
-
-    // Find the driver profile
-    const driver = await Driver.findOne({
-      userId: req.auth.id
-    });
-
-    if (!driver) {
-      return res.status(404).json({
-        success: false,
-        message: "Driver profile not found"
-      });
-    }
-
-    // Driver must be online
-    if (!driver.online) {
-      return res.status(400).json({
-        success: false,
-        message: "Go online before accepting rides"
-      });
-    }
-
-    // Accept only a searching ride
-    const ride = await Ride.findOneAndUpdate(
-      {
-        _id: req.params.id,
-        status: "SEARCHING_DRIVER"
-      },
-      {
-        driverId: req.auth.id,
-        status: "DRIVER_ASSIGNED"
-      },
-      {
-        new: true
-      }
-    );
-
-    if (!ride) {
-      return res.status(409).json({
-        success: false,
-        message: "Ride is no longer available"
-      });
-    }
-
-
-    /* =====================================================
-       SEND UPDATE TO PASSENGER
-       ===================================================== */
-
-    io.to(`user:${ride.passengerId}`).emit(
-      "ride:update",
-      ride
-    );
-
-
-    /* =====================================================
-       SEND GLOBAL UPDATE
-       ===================================================== */
-
-    io.emit(
-      "ride:update",
-      ride
-    );
-
-
-    /* =====================================================
-       RESPONSE TO DRIVER
-       ===================================================== */
-
-    res.json({
-      success: true,
-      ride
-    });
-
-  } catch (error) {
-
-    console.error(
-      "Accept ride error:",
-      error
-    );
-
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-});
-
 /* =========================================================
-   UPDATE RIDE STATUS
+   ACCEPT RIDE
+   PHASE 1
+   - Driver must be online
+   - Driver cannot have another active ride
+   - Only one driver can accept a ride
+   - Passenger gets real-time update
+   - Other drivers receive ride removal
    ========================================================= */
 
 app.post(
-    "/api/rides/:id/status",
+    "/api/rides/:id/accept",
     auth,
     async function (req, res) {
 
         try {
 
-            const allowed = [
-
-                "DRIVER_ARRIVING",
-
-                "DRIVER_AT_PICKUP",
-
-                "RIDE_STARTED",
-
-                "RIDE_COMPLETED",
-
-                "CANCELLED"
-
-            ];
-
-
-            const status =
-                req.body.status;
-
-
-            if (
-                !allowed.includes(
-                    status
-                )
-            ) {
-
-                return res
-                    .status(400)
-                    .json({
-
-                        success: false,
-
-                        message:
-                            "Invalid ride status"
-
-                    });
-
-            }
-
-
-            const ride =
-                await Ride.findById(
-                    req.params.id
-                );
-
-
-            if (!ride) {
-
-                return res
-                    .status(404)
-                    .json({
-
-                        success: false,
-
-                        message:
-                            "Ride not found"
-
-                    });
-
-            }
-
-
             /* ---------------------------------------------
-               ONLY RIDE PASSENGER OR DRIVER
+               DRIVER CHECK
                --------------------------------------------- */
 
-            const userId =
-                String(
-                    req.auth.id
-                );
-
-
-            const passengerId =
-                String(
-                    ride.passengerId
-                );
-
-
-            const driverId =
-                ride.driverId
-                    ? String(
-                        ride.driverId
-                    )
-                    : null;
-
-
             if (
-                userId !== passengerId &&
-                userId !== driverId
+                req.auth.role !== "driver"
             ) {
 
                 return res
@@ -1986,7 +1812,7 @@ app.post(
                         success: false,
 
                         message:
-                            "You are not part of this ride"
+                            "Only drivers can accept rides"
 
                     });
 
@@ -1994,18 +1820,168 @@ app.post(
 
 
             /* ---------------------------------------------
-               UPDATE STATUS
+               FIND DRIVER
                --------------------------------------------- */
 
-            ride.status =
-                status;
+            const driver =
+                await Driver.findOne({
+
+                    userId:
+                        req.auth.id
+
+                });
 
 
-            await ride.save();
+            if (!driver) {
+
+                return res
+                    .status(404)
+                    .json({
+
+                        success: false,
+
+                        message:
+                            "Driver profile not found"
+
+                    });
+
+            }
 
 
             /* ---------------------------------------------
-               SEND UPDATE TO PASSENGER
+               DRIVER MUST BE ONLINE
+               --------------------------------------------- */
+
+            if (
+                !driver.online
+            ) {
+
+                return res
+                    .status(400)
+                    .json({
+
+                        success: false,
+
+                        message:
+                            "Go online before accepting rides"
+
+                    });
+
+            }
+
+
+            /* ---------------------------------------------
+               CHECK DRIVER ACTIVE RIDE
+               --------------------------------------------- */
+
+            const activeRide =
+                await Ride.findOne({
+
+                    driverId:
+                        req.auth.id,
+
+                    status: {
+
+                        $in: [
+
+                            "DRIVER_ASSIGNED",
+
+                            "DRIVER_ARRIVING",
+
+                            "DRIVER_AT_PICKUP",
+
+                            "RIDE_STARTED"
+
+                        ]
+
+                    }
+
+                });
+
+
+            if (activeRide) {
+
+                return res
+                    .status(409)
+                    .json({
+
+                        success: false,
+
+                        message:
+                            "You already have an active ride"
+
+                    });
+
+            }
+
+
+            /* ---------------------------------------------
+               ATOMIC RIDE ACCEPT
+               --------------------------------------------- */
+
+            const ride =
+                await Ride.findOneAndUpdate(
+
+                    {
+
+                        _id:
+                            req.params.id,
+
+                        status:
+                            "SEARCHING_DRIVER"
+
+                    },
+
+                    {
+
+                        driverId:
+                            req.auth.id,
+
+                        status:
+                            "DRIVER_ASSIGNED"
+
+                    },
+
+                    {
+
+                        new: true
+
+                    }
+
+                );
+
+
+            /* ---------------------------------------------
+               RIDE ALREADY ACCEPTED
+               --------------------------------------------- */
+
+            if (!ride) {
+
+                return res
+                    .status(409)
+                    .json({
+
+                        success: false,
+
+                        message:
+                            "Ride is no longer available"
+
+                    });
+
+            }
+
+
+            /* ---------------------------------------------
+               MARK DRIVER BUSY
+               --------------------------------------------- */
+
+            driver.online = false;
+
+            await driver.save();
+
+
+            /* ---------------------------------------------
+               UPDATE PASSENGER
                --------------------------------------------- */
 
             io.to(
@@ -2017,43 +1993,55 @@ app.post(
 
 
             /* ---------------------------------------------
-               SEND UPDATE TO DRIVER
-               --------------------------------------------- */
-
-            if (ride.driverId) {
-
-                io.to(
-                    `driver:${ride.driverId}`
-                ).emit(
-                    "ride:update",
-                    ride
-                );
-
-            }
-
-
-            /* ---------------------------------------------
-               GLOBAL UPDATE
+               REMOVE RIDE FROM OTHER DRIVERS
                --------------------------------------------- */
 
             io.emit(
+                "ride:accepted",
+                {
+
+                    rideId:
+                        ride._id,
+
+                    driverId:
+                        req.auth.id
+
+                }
+            );
+
+
+            /* ---------------------------------------------
+               DRIVER ROOM UPDATE
+               --------------------------------------------- */
+
+            io.to(
+                `driver:${req.auth.id}`
+            ).emit(
                 "ride:update",
                 ride
             );
 
 
+            /* ---------------------------------------------
+               RESPONSE
+               --------------------------------------------- */
+
             res.json({
 
                 success: true,
+
+                message:
+                    "Ride accepted successfully",
 
                 ride
 
             });
 
+
         } catch (error) {
 
             console.error(
-                "Ride status error:",
+                "Accept ride error:",
                 error
             );
 
@@ -2073,7 +2061,6 @@ app.post(
 
     }
 );
-
 
 /* =========================================================
    DRIVER LOCATION
