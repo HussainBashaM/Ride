@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Become a Driver — GoRide</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #f7f5ff;
+            color: #20202a;
+            font-family: Arial, sans-serif;
+        }
+
+        .driver-page {
+            width: 100%;
+            max-width: 520px;
+            min-height: 100vh;
+            margin: auto;
+            padding-bottom: 30px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+        }
+
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            border: 0;
+            border-radius: 50%;
+            background: #eee8ff;
+            color: #6d28d9;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .brand {
+            text-decoration: none;
+            font-size: 27px;
+            font-weight: 800;
+            color: #222;
+        }
+
+        .brand span {
+            color: #7c3aed;
+        }
+
+        .intro {
+            padding: 5px 20px 20px;
+        }
+
+        .intro h1 {
+            margin: 0 0 8px;
+            font-size: 28px;
+        }
+
+        .intro p {
+            margin: 0;
+            color: #777;
+            line-height: 1.5;
+        }
+
+        .form-card {
+            margin: 0 16px;
+            padding: 20px;
+            background: #fff;
+            border-radius: 24px;
+            box-shadow: 0 8px 30px rgba(80, 50, 130, .09);
+        }
+
+        .form-title {
+            margin: 0 0 18px;
+            font-size: 18px;
+        }
+
+        .field {
+            margin-bottom: 15px;
+        }
+
+        .field label {
+            display: block;
+            margin-bottom: 7px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #555;
+        }
+
+        .field input,
+        .field select {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #ddd8e8;
+            border-radius: 13px;
+            outline: none;
+            background: #faf9fd;
+            font-size: 15px;
+        }
+
+        .field input:focus,
+        .field select:focus {
+            border-color: #7c3aed;
+            background: #fff;
+        }
+
+        .submit-btn {
+            width: 100%;
+            margin-top: 8px;
+            padding: 16px;
+            border: 0;
+            border-radius: 15px;
+            background: linear-gradient(
+                135deg,
+                #6d28d9,
+                #8b5cf6
+            );
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .submit-btn:disabled {
+            opacity: .65;
+            cursor: not-allowed;
+        }
+
+        .message {
+            display: none;
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .message.error {
+            display: block;
+            background: #fff0f0;
+            color: #c62828;
+        }
+
+        .message.success {
+            display: block;
+            background: #effbf3;
+            color: #218838;
+        }
+
+        .note {
+            margin-top: 18px;
+            padding: 13px;
+            border-radius: 13px;
+            background: #f3efff;
+            color: #6d28d9;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="driver-page">
+
+    <div class="topbar">
+
+        <button
+            type="button"
+            class="back-btn"
+            onclick="history.back()">
+            ←
+        </button>
+
+        <a
+            class="brand"
+            href="../index.html">
+            Go<span>Ride</span>
+        </a>
+
+    </div>
+
+
+    <section class="intro">
+
+        <h1>Become a Driver 🛵</h1>
+
+        <p>
+            Use your existing GoRide account and add
+            your driving and vehicle details.
+        </p>
+
+    </section>
+
+
+    <section class="form-card">
+
+        <h2 class="form-title">
+            Driver Details
+        </h2>
+
+
+        <form id="driverForm">
+
+
+            <div class="field">
+
+                <label for="licenceNumber">
+                    Driving Licence Number
+                </label>
+
+                <input
+                    id="licenceNumber"
+                    type="text"
+                    placeholder="Enter licence number"
+                    required>
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="vehicleType">
+                    Vehicle Type
+                </label>
+
+                <select
+                    id="vehicleType"
+                    required>
+
+                    <option value="">
+                        Select vehicle type
+                    </option>
+
+                    <option value="Bike">
+                        Bike
+                    </option>
+
+                    <option value="Auto">
+                        Auto
+                    </option>
+
+                    <option value="Car">
+                        Car
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="vehicleModel">
+                    Vehicle Model
+                </label>
+
+                <input
+                    id="vehicleModel"
+                    type="text"
+                    placeholder="Example: Honda Activa"
+                    required>
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="vehicleNumber">
+                    Vehicle Number
+                </label>
+
+                <input
+                    id="vehicleNumber"
+                    type="text"
+                    placeholder="Example: AP 00 AB 0000"
+                    required>
+
+            </div>
+
+
+            <button
+                id="submitBtn"
+                type="submit"
+                class="submit-btn">
+
+                Become a Driver
+
+            </button>
+
+
+            <div
+                id="message"
+                class="message">
+            </div>
+
+
+            <div class="note">
+
+                ℹ️ Your existing passenger account will
+                be used. You don't need to create another
+                GoRide account.
+
+            </div>
+
+        </form>
+
+    </section>
+
+</div>
+
+
+<script>
+
+const API_BASE =
+    window.GORIDE_API ||
+    window.API_BASE_URL ||
+    localStorage.getItem("API_BASE_URL") ||
+    "https://ride-f6la.onrender.com";
+
+
+function getToken() {
+
+    return (
+        localStorage.getItem("token") ||
+        localStorage.getItem("goride_token") ||
+        ""
+    );
+}
+
+
+function showMessage(text, type) {
+
+    const message =
+        document.getElementById("message");
+
+    message.textContent = text;
+
+    message.className =
+        "message " + type;
+}
+
+
+document
+    .getElementById("driverForm")
+    .addEventListener("submit", async function(event) {
+
+        event.preventDefault();
+
+
+        const token =
+            getToken();
+
+
+        if (!token) {
+
+            showMessage(
+                "Please login to your GoRide account first.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        const licenceNumber =
+            document
+                .getElementById("licenceNumber")
+                .value
+                .trim();
+
+
+        const vehicleType =
+            document
+                .getElementById("vehicleType")
+                .value;
+
+
+        const vehicleModel =
+            document
+                .getElementById("vehicleModel")
+                .value
+                .trim();
+
+
+        const vehicleNumber =
+            document
+                .getElementById("vehicleNumber")
+                .value
+                .trim();
+
+
+        if (
+            !licenceNumber ||
+            !vehicleType ||
+            !vehicleModel ||
+            !vehicleNumber
+        ) {
+
+            showMessage(
+                "Please fill in all driver details.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        const button =
+            document.getElementById("submitBtn");
+
+
+        button.disabled = true;
+
+        button.textContent =
+            "Creating Driver Profile...";
+
+
+        try {
+
+            const response =
+                await fetch(
+                    API_BASE +
+                    "/api/drivers/become",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json",
+
+                            "Authorization":
+                                "Bearer " + token
+                        },
+
+                        body: JSON.stringify({
+
+                            licenceNumber:
+                                licenceNumber,
+
+                            vehicleType:
+                                vehicleType,
+
+                            vehicleModel:
+                                vehicleModel,
+
+                            vehicleNumber:
+                                vehicleNumber
+
+                        })
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (
+                !response.ok ||
+                !data.success
+            ) {
+
+                throw new Error(
+                    data.message ||
+                    "Unable to become driver."
+                );
+            }
+
+
+            /*
+             * Save updated user information.
+             */
+
+            if (data.user) {
+
+                localStorage.setItem(
+                    "user",
+                    JSON.stringify(
+                        data.user
+                    )
+                );
+
+                localStorage.setItem(
+                    "goride_user",
+                    JSON.stringify(
+                        data.user
+                    )
+                );
+            }
+
+
+            /*
+             * Save new token if backend
+             * sends one.
+             */
+
+            if (data.token) {
+
+                localStorage.setItem(
+                    "token",
+                    data.token
+                );
+
+                localStorage.setItem(
+                    "goride_token",
+                    data.token
+                );
+            }
+
+
+            showMessage(
+                "Driver profile created successfully! Redirecting...",
+                "success"
+            );
+
+
+            setTimeout(function() {
+
+                window.location.href =
+                    "../driver/dashboard.html";
+
+            }, 1000);
+
+
+        } catch (error) {
+
+            console.error(
+                "Become driver error:",
+                error
+            );
+
+
+            showMessage(
+                error.message ||
+                "Unable to become driver.",
+                "error"
+            );
+
+
+            button.disabled = false;
+
+            button.textContent =
+                "Become a Driver";
+        }
+
+    });
+
+</script>
+
+</body>
+</html>
