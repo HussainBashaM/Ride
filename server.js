@@ -775,7 +775,92 @@ function fare(
     );
 
 }
+/* =========================================================
+   FARE ESTIMATE
+   ========================================================= */
 
+app.post(
+    "/api/rides/estimate",
+    auth,
+    function (req, res) {
+
+        try {
+
+            const distance =
+                Math.max(
+                    0.5,
+                    Number(req.body.distance) || 0
+                );
+
+            const vehicleType =
+                req.body.vehicleType || "Bike";
+
+
+            const speed = {
+
+                Bike: 30,
+
+                Auto: 25,
+
+                Car: 28
+
+            }[vehicleType] || 30;
+
+
+            const estimatedTime =
+                Math.max(
+                    3,
+                    Math.ceil(
+                        (distance / speed) * 60
+                    )
+                );
+
+
+            const estimatedFare =
+                fare(
+                    distance,
+                    vehicleType
+                );
+
+
+            res.json({
+
+                success: true,
+
+                distance:
+                    distance,
+
+                estimatedTime:
+                    estimatedTime,
+
+                fare:
+                    estimatedFare,
+
+                vehicleType:
+                    vehicleType
+
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Fare estimate error:",
+                error
+            );
+
+            res.status(500).json({
+
+                success: false,
+
+                message:
+                    error.message
+
+            });
+
+        }
+
+    }
+);
 
 /* =========================================================
    DISTANCE BETWEEN TWO GPS LOCATIONS
