@@ -1204,3 +1204,37 @@ window.updateRideStatus =
 
 window.getCurrentLocation =
     getCurrentLocation;
+
+/* =========================================================
+   ACTIVE RIDE GPS STATE
+   ========================================================= */
+
+let activeRideMode = false;
+
+function hasActiveDriverRide() {
+
+    try {
+
+        const ride =
+            JSON.parse(
+                localStorage.getItem(
+                    "driver_active_ride"
+                ) || "null"
+            );
+
+        if (!ride) {
+            return false;
+        }
+
+        return [
+            "DRIVER_ASSIGNED",
+            "DRIVER_ARRIVING",
+            "DRIVER_AT_PICKUP",
+            "RIDE_STARTED"
+        ].includes(ride.status);
+
+    } catch {
+
+        return false;
+    }
+}
