@@ -1911,6 +1911,9 @@ app.get(
 /* =========================================================
    DRIVER ONLINE / OFFLINE
    ========================================================= */
+/* =========================================================
+   DRIVER ONLINE / OFFLINE + LOCATION UPDATE
+   ========================================================= */
 
 app.post(
     "/api/drivers/status",
@@ -1919,123 +1922,188 @@ app.post(
 
         try {
 
-            if (
-                req.auth.role !==
-                "driver"
-            ) {
+            /* -------------------------------------------------
+               ONLY DRIVER CAN UPDATE DRIVER STATUS
+               ------------------------------------------------- */
 
-                return res
-                    .status(403)
-                    .json({
+            if (req.auth.role !== "driver") {
 
-                        success: false,
+                return res.status(403).json({
 
-                        message:
-                            "Only driver accounts can change driver status"
+                    success: false,
 
-                    });
+                    message:
+                        "Only drivers can update driver status"
 
-            }
-
-
-            const online =
-                !!req.body.online;
-
-
-            const location =
-                req.body.location || {};
-
-
-            if (
-                online &&
-                !validLocation(
-                    location
-                )
-            ) {
-
-                return res
-                    .status(400)
-                    .json({
-
-                        success: false,
-
-                        message:
-                            "Valid GPS location is required to go online"
-
-                    });
+                });
 
             }
 
 
-            const update = {
-
-                online
-
-            };
-
-
-            if (
-                validLocation(
-                    location
-                )
-            ) {
-
-                update.location = {
-
-                    lat:
-                        Number(
-                            location.lat
-                        ),
-
-                    lng:
-                        Number(
-                            location.lng
-                        )
-
-                };
-
-                update.lastLocationUpdate =
-                    new Date();
-
-            }
-
+            /* -------------------------------------------------
+               FIND DRIVER PROFILE
+               ------------------------------------------------- */
 
             const driver =
-                await Driver.findOneAndUpdate(
-
-                    {
-                        userId:
-                            req.auth.id
-                    },
-
-                    update,
-
-                    {
-                        new: true
-                    }
-
-                );
+                await Driver.findOne({
+                    userId: req.auth.id
+                });
 
 
             if (!driver) {
 
-                return res
-                    .status(404)
-                    .json({
+                return res.status(404).json({
 
-                        success: false,
+                    success: false,
 
-                        message:
-                            "Driver profile not found"
+                    message:
+                        "Driver profile not found"
 
-                    });
+                });
 
             }
 
 
-            /* ---------------------------------------------
-               BROADCAST STATUS
-               --------------------------------------------- */
+            const requestedOnline =
+                req.body.online === true;
+
+
+            const location =
+                req.body.location || null;
+
+
+            /* =================================================
+               CHECK ACTIVE RIDE
+               ================================================= */
+
+            const activeRide =
+                await Ride.findOne({
+
+                    driverId: req.auth.id,
+
+                    status: {
+                        $in: [
+                            "DRIVER_ASSIGNED",
+                            "DRIVER_ARRIVING",
+                            "DRIVER_AT_PICKUP",
+                            "RIDE_STARTED"
+                        ]
+                    }
+
+                });
+
+
+            /* -------------------------------------------------
+               BUSY DRIVER CANNOT BECOME AVAILABLE
+               ------------------------------------------------- */
+
+            if (
+                requestedOnline &&
+                activeRide
+            ) {
+
+                /*
+                 * Keep driver technically unavailable
+                 * while the current ride is active.
+                 */
+
+                driver.online = false;
+
+
+                /*
+                 * Still allow GPS location updates.
+                 */
+
+                if (location) {
+
+                    driver.location = {
+
+                        lat:
+                            Number(
+                                location.lat
+                            ),
+
+                        lng:
+                            Number(
+                                location.lng
+                            )
+
+                    };
+
+                }
+
+
+                await driver.save();
+
+
+                return res.json({
+
+                    success: true,
+
+                    online: false,
+
+                    busy: true,
+
+                    message:
+                        "Driver is currently on an active ride",
+
+                    location:
+                        driver.location
+
+                });
+
+            }
+
+
+            /* =================================================
+               UPDATE ONLINE / OFFLINE
+               ================================================= */
+
+            driver.online =
+                requestedOnline;
+
+
+            /* -------------------------------------------------
+               UPDATE LOCATION
+               ------------------------------------------------- */
+
+            if (location) {
+
+                const lat =
+                    Number(
+                        location.lat
+                    );
+
+                const lng =
+                    Number(
+                        location.lng
+                    );
+
+
+                if (
+                    Number.isFinite(lat) &&
+                    Number.isFinite(lng)
+                ) {
+
+                    driver.location = {
+
+                        lat: lat,
+
+                        lng: lng
+
+                    };
+
+                }
+
+            }
+
+
+            await driver.save();
+
+
+            /* =================================================
+               REAL-TIME DRIVER STATUS
+               ================================================= */
 
             io.emit(
                 "driver:status",
@@ -2048,120 +2116,28 @@ app.post(
                         driver.online,
 
                     location:
-                        driver.location
+                        driver.location || null
 
                 }
             );
 
 
-            /* ---------------------------------------------
-               WHEN DRIVER GOES ONLINE
-               SEND EXISTING NEARBY RIDES
-               --------------------------------------------- */
+            /* =================================================
+               RESPONSE
+               ================================================= */
 
-            if (
-                driver.online &&
-                validLocation(
-                    driver.location
-                )
-            ) {
-
-                const searchingRides =
-                    await Ride.find({
-
-                        status:
-                            "SEARCHING_DRIVER"
-
-                    })
-                    .sort({
-
-                        createdAt:
-                            -1
-
-                    })
-                    .limit(20);
-
-
-                let sentCount = 0;
-
-
-                for (
-                    const ride
-                    of searchingRides
-                ) {
-
-                    if (
-                        !validLocation(
-                            ride.pickup
-                        )
-                    ) {
-
-                        continue;
-
-                    }
-
-
-                    const distance =
-                        distanceBetweenPoints(
-
-                            Number(
-                                driver.location.lat
-                            ),
-
-                            Number(
-                                driver.location.lng
-                            ),
-
-                            Number(
-                                ride.pickup.lat
-                            ),
-
-                            Number(
-                                ride.pickup.lng
-                            )
-
-                        );
-
-
-                    if (
-                        distance <=
-                        MAX_DRIVER_DISTANCE_KM
-                    ) {
-
-                        io.to(
-                            `driver:${driver.userId}`
-                        ).emit(
-                            "ride:new",
-                            ride
-                        );
-
-                        sentCount++;
-
-                    }
-
-                }
-
-
-                console.log(
-
-                    "Driver online:",
-                    driver.userId.toString(),
-
-                    "Nearby pending rides:",
-                    sentCount
-
-                );
-
-            }
-
-
-            res.json({
+            return res.json({
 
                 success: true,
 
-                driver
+                online:
+                    driver.online,
+
+                location:
+                    driver.location || null
 
             });
+
 
         } catch (error) {
 
@@ -2171,23 +2147,21 @@ app.post(
             );
 
 
-            res
-                .status(500)
-                .json({
+            return res.status(500).json({
 
-                    success: false,
+                success: false,
 
-                    message:
-                        error.message
+                message:
+                    error.message ||
+                    "Unable to update driver status"
 
-                });
+            });
 
         }
 
     }
 );
-
-
+          
 /* =========================================================
    DRIVER LOCATION
    ========================================================= */
