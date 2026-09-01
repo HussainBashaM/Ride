@@ -1172,151 +1172,128 @@ function updateRideRequest(ride) {
 /* =====================================================
    UPDATE RIDE STATUS
 ===================================================== */
-
 async function updateRideStatus(status) {
 
-    const ride =
-        JSON.parse(
-
-            localStorage.getItem(
-                "driver_active_ride"
-            ) || "null"
-
-        );
-
-
-    if (!ride) {
-
-        alert(
-            "No active ride."
-        );
-
+    if (!activeRide || !activeRide._id) {
+        alert("No active ride found.");
         return;
-
     }
 
+    const token =
+        localStorage.getItem("token") ||
+        localStorage.getItem("goride_token");
+
+    if (!token) {
+        alert("Please login again.");
+        return;
+    }
 
     try {
 
-        const response =
-            await fetch(
+        const response = await fetch(
+            API_BASE +
+            "/api/rides/" +
+            activeRide._id +
+            "/status",
+            {
+                method: "POST",
 
-                API_BASE +
-                "/api/rides/" +
-                ride._id +
-                "/status",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
 
-                {
+                body: JSON.stringify({
+                    status: status
+                })
+            }
+        );
 
-                    method:
-                        "POST",
+        const data = await response.json().catch(() => ({}));
 
-                    headers:
-                        authHeaders(),
+        if (!response.ok) {
 
-                    body:
-                        JSON.stringify({
-
-                            status:
-                                status
-
-                        })
-
-                }
-
-            );
-
-
-        const data =
-            await response.json();
-
-
-        if (
-            !response.ok ||
-            !data.success
-        ) {
-
-            throw new Error(
-
+            alert(
                 data.message ||
-                "Unable to update ride"
-
+                data.error ||
+                "Unable to update ride status."
             );
 
+            return;
         }
 
+        console.log(
+            "Ride status updated:",
+            data
+        );
+
+        if (data.ride) {
+
+            activeRide = data.ride;
+
+        } else if (data) {
+
+            activeRide = {
+                ...activeRide,
+                ...data
+            };
+
+        }
 
         localStorage.setItem(
-
             "driver_active_ride",
-
-            JSON.stringify(
-                data.ride
-            )
-
+            JSON.stringify(activeRide)
         );
 
+        renderRide();
 
-        if (
+        /*
+         * If the server/socket sends the updated
+         * ride, passenger will receive it too.
+         */
 
-            status ===
-            "RIDE_COMPLETED" ||
+        if (status === "DRIVER_AT_PICKUP") {
 
-            status ===
-            "CANCELLED"
-
-        ) {
-
-            activeRideMode =
-                false;
-
-
-            localStorage.removeItem(
-                "driver_active_ride"
+            alert(
+                "Driver marked as arrived."
             );
 
+        }
 
-            if (!online) {
+        if (status === "RIDE_STARTED") {
 
-                stopLocationTracking();
-
-            }
+            alert(
+                "Ride started successfully."
+            );
 
         }
 
-        else {
+        if (status === "RIDE_COMPLETED") {
 
-            activeRideMode =
-                true;
+            alert(
+                "Ride completed successfully."
+            );
 
-            startLocationTracking();
+            setTimeout(() => {
+
+                window.location.href =
+                    "history.html";
+
+            }, 1200);
 
         }
 
-
-        alert(
-            "Ride status updated."
-        );
-
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.error(
             "Ride status error:",
             error
         );
 
-
         alert(
-
-            error.message ||
-            "Unable to update ride."
-
+            "Unable to connect to server."
         );
-
     }
-
 }
 
 
