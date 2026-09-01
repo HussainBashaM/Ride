@@ -63,10 +63,12 @@ function getToken() {
 /* =========================================================
    AUTH HEADERS
    ========================================================= */
+function authHeaders() {
 
-function getAuthHeaders() {
-
-    const token = getToken();
+    const token =
+        localStorage.getItem("token") ||
+        localStorage.getItem("goride_token") ||
+        "";
 
     return {
         "Content-Type": "application/json",
@@ -78,10 +80,7 @@ function getAuthHeaders() {
             }
             : {})
     };
-
 }
-
-
 /* =========================================================
    GET DRIVER ID
    ========================================================= */
@@ -1945,6 +1944,7 @@ window.stopLocationTracking =
 
 window.getActiveRide =
     getActiveRide;
+window.authHeaders = authHeaders;
 
 
 /* =========================================================
