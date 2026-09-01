@@ -1,8 +1,23 @@
+/* =========================================================
+   GoRide DRIVER.JS
+   Corrected Step 3 Version
+   ========================================================= */
+
+
+/* =========================================================
+   API
+   ========================================================= */
+
 const API_BASE =
     window.GORIDE_API ||
     window.API_BASE_URL ||
     localStorage.getItem("API_BASE_URL") ||
     "https://ride-f6la.onrender.com";
+
+
+/* =========================================================
+   SOCKET
+   ========================================================= */
 
 const socket =
     typeof io === "function"
@@ -11,270 +26,401 @@ const socket =
         })
         : null;
 
+
+/* =========================================================
+   DRIVER STATE
+   ========================================================= */
+
 let online = false;
+
 let activeRideMode = false;
+
 let locationWatcher = null;
 
+let activeRide =
+    JSON.parse(
+        localStorage.getItem(
+            "driver_active_ride"
+        ) || "null"
+    );
 
-/* =====================================================
-   AUTH HEADERS
-===================================================== */
 
-function authHeaders() {
+/* =========================================================
+   TOKEN
+   ========================================================= */
 
-    const token =
+function getToken() {
+
+    return (
         localStorage.getItem("token") ||
         localStorage.getItem("goride_token") ||
-        "";
+        ""
+    );
 
-    return {
-        "Content-Type": "application/json",
-        ...(token
-            ? {
-                Authorization: "Bearer " + token
-            }
-            : {})
-    };
 }
 
 
-/* =====================================================
+/* =========================================================
+   AUTH HEADERS
+   ========================================================= */
+
+function getAuthHeaders() {
+
+    const token = getToken();
+
+    return {
+        "Content-Type": "application/json",
+
+        ...(token
+            ? {
+                "Authorization":
+                    "Bearer " + token
+            }
+            : {})
+    };
+
+}
+
+
+/* =========================================================
    GET DRIVER ID
-===================================================== */
+   ========================================================= */
 
 function getDriverId() {
 
     try {
 
-        const user = JSON.parse(
-            localStorage.getItem("user") ||
-            localStorage.getItem("goride_user") ||
-            "null"
+        const user =
+            JSON.parse(
+                localStorage.getItem("user") ||
+                localStorage.getItem("goride_user") ||
+                "null"
+            );
+
+        return (
+            user?.id ||
+            user?._id ||
+            null
         );
 
-        return user?.id || user?._id || null;
+    } catch (error) {
 
-    } catch {
+        console.error(
+            "Driver ID error:",
+            error
+        );
 
         return null;
-
     }
+
 }
 
 
-/* =====================================================
-   CHECK ACTIVE RIDE
-===================================================== */
+/* =========================================================
+   GET ACTIVE RIDE
+   ========================================================= */
 
-function hasActiveDriverRide() {
+function getActiveRide() {
 
     try {
 
-        const ride = JSON.parse(
-            localStorage.getItem(
-                "driver_active_ride"
-            ) || "null"
+        const ride =
+            JSON.parse(
+                localStorage.getItem(
+                    "driver_active_ride"
+                ) || "null"
+            );
+
+        if (ride && ride._id) {
+
+            activeRide = ride;
+
+            return ride;
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Active ride read error:",
+            error
         );
 
-        if (!ride) return false;
+    }
 
-        return [
-            "DRIVER_ASSIGNED",
-            "DRIVER_ARRIVING",
-            "DRIVER_AT_PICKUP",
-            "RIDE_STARTED"
-        ].includes(ride.status);
+    return activeRide;
 
-    } catch {
+}
+
+
+/* =========================================================
+   SAVE ACTIVE RIDE
+   ========================================================= */
+
+function saveActiveRide(ride) {
+
+    if (!ride) {
+
+        activeRide = null;
+
+        localStorage.removeItem(
+            "driver_active_ride"
+        );
+
+        return;
+    }
+
+    activeRide = ride;
+
+    localStorage.setItem(
+        "driver_active_ride",
+        JSON.stringify(ride)
+    );
+
+}
+
+
+/* =========================================================
+   CHECK ACTIVE RIDE
+   ========================================================= */
+
+function hasActiveDriverRide() {
+
+    const ride =
+        getActiveRide();
+
+    if (!ride) {
 
         return false;
 
     }
+
+    return [
+
+        "DRIVER_ASSIGNED",
+
+        "DRIVER_ARRIVING",
+
+        "DRIVER_AT_PICKUP",
+
+        "RIDE_STARTED"
+
+    ].includes(
+        ride.status
+    );
+
 }
 
 
-/* =====================================================
+/* =========================================================
    GET CURRENT LOCATION
-===================================================== */
+   ========================================================= */
 
 function getCurrentLocation() {
 
-    return new Promise(function (resolve) {
+    return new Promise(
+        function (resolve) {
 
-        if (!navigator.geolocation) {
+            if (
+                !navigator.geolocation
+            ) {
 
-            alert(
-                "Location is not supported on this device."
-            );
-
-            resolve(null);
-
-            return;
-
-        }
-
-
-        navigator.geolocation.getCurrentPosition(
-
-            function (position) {
-
-                resolve({
-
-                    lat:
-                        position.coords.latitude,
-
-                    lng:
-                        position.coords.longitude
-
-                });
-
-            },
-
-
-            function (error) {
-
-                console.warn(
-                    "GPS first attempt failed:",
-                    error
+                alert(
+                    "Location is not supported on this device."
                 );
 
+                resolve(null);
 
-                navigator.geolocation.getCurrentPosition(
-
-                    function (position) {
-
-                        resolve({
-
-                            lat:
-                                position.coords.latitude,
-
-                            lng:
-                                position.coords.longitude
-
-                        });
-
-                    },
-
-
-                    function (secondError) {
-
-                        console.error(
-                            "GPS failed:",
-                            secondError
-                        );
-
-
-                        if (
-                            secondError.code === 1
-                        ) {
-
-                            alert(
-                                "Location permission is blocked. Please allow location permission for GoRide."
-                            );
-
-                        }
-
-                        else if (
-                            secondError.code === 2
-                        ) {
-
-                            alert(
-                                "Unable to detect your location. Please turn ON GPS/Location and try again."
-                            );
-
-                        }
-
-                        else {
-
-                            alert(
-                                "Location request timed out. Please try again."
-                            );
-
-                        }
-
-
-                        resolve(null);
-
-                    },
-
-                    {
-
-                        enableHighAccuracy: false,
-
-                        timeout: 30000,
-
-                        maximumAge: 60000
-
-                    }
-
-                );
-
-            },
-
-            {
-
-                enableHighAccuracy: true,
-
-                timeout: 30000,
-
-                maximumAge: 10000
-
+                return;
             }
 
-        );
 
-    });
+            navigator.geolocation.getCurrentPosition(
+
+                function (position) {
+
+                    resolve({
+
+                        lat:
+                            position.coords.latitude,
+
+                        lng:
+                            position.coords.longitude
+
+                    });
+
+                },
+
+                function (error) {
+
+                    console.warn(
+                        "GPS first attempt failed:",
+                        error
+                    );
+
+
+                    navigator.geolocation.getCurrentPosition(
+
+                        function (position) {
+
+                            resolve({
+
+                                lat:
+                                    position.coords.latitude,
+
+                                lng:
+                                    position.coords.longitude
+
+                            });
+
+                        },
+
+                        function (secondError) {
+
+                            console.error(
+                                "GPS failed:",
+                                secondError
+                            );
+
+
+                            if (
+                                secondError.code === 1
+                            ) {
+
+                                alert(
+                                    "Location permission is blocked. Please allow location permission for GoRide."
+                                );
+
+                            }
+
+                            else if (
+                                secondError.code === 2
+                            ) {
+
+                                alert(
+                                    "Unable to detect your location. Please turn ON GPS/Location and try again."
+                                );
+
+                            }
+
+                            else {
+
+                                alert(
+                                    "Unable to get your location. Please turn ON GPS and try again."
+                                );
+
+                            }
+
+
+                            resolve(null);
+
+                        },
+
+                        {
+
+                            enableHighAccuracy:
+                                false,
+
+                            timeout:
+                                30000,
+
+                            maximumAge:
+                                60000
+
+                        }
+
+                    );
+
+                },
+
+                {
+
+                    enableHighAccuracy:
+                        true,
+
+                    timeout:
+                        30000,
+
+                    maximumAge:
+                        10000
+
+                }
+
+            );
+
+        }
+    );
 
 }
 
 
-/* =====================================================
+/* =========================================================
    SEND DRIVER LOCATION
-===================================================== */
+   ========================================================= */
 
-async function sendDriverLocation(location) {
+async function sendDriverLocation(
+    location
+) {
+
+    if (!location) {
+
+        return;
+    }
+
+
+    /*
+     * During an active ride the driver
+     * must continue sending GPS even if
+     * the server marks the driver busy.
+     */
 
     if (
-        (!online && !activeRideMode) ||
-        !location
+        !online &&
+        !activeRideMode
     ) {
 
         return;
-
     }
 
 
     try {
 
-        const response = await fetch(
+        const response =
+            await fetch(
 
-            API_BASE +
-            "/api/drivers/status",
+                API_BASE +
+                "/api/drivers/status",
 
-            {
+                {
 
-                method: "POST",
+                    method:
+                        "POST",
 
-                headers:
-                    authHeaders(),
+                    headers:
+                        getAuthHeaders(),
 
-                body:
-                    JSON.stringify({
+                    body:
+                        JSON.stringify({
 
-                        online: true,
+                            online:
+                                true,
 
-                        location:
-                            location
+                            location:
+                                location
 
-                    })
+                        })
 
-            }
+                }
 
-        );
+            );
 
 
         const data =
-            await response.json();
+            await response
+                .json()
+                .catch(
+                    () => ({})
+                );
 
 
         if (
@@ -283,12 +429,11 @@ async function sendDriverLocation(location) {
         ) {
 
             console.warn(
-                "Location update failed:",
+                "Driver location update failed:",
                 data.message
             );
 
             return;
-
         }
 
 
@@ -296,13 +441,20 @@ async function sendDriverLocation(location) {
             getDriverId();
 
 
+        /*
+         * Send live location through
+         * Socket.IO.
+         */
+
         if (
             socket &&
             driverId
         ) {
 
             socket.emit(
+
                 "driver:location",
+
                 {
 
                     driverId:
@@ -315,6 +467,7 @@ async function sendDriverLocation(location) {
                         activeRideMode
 
                 }
+
             );
 
         }
@@ -333,16 +486,21 @@ async function sendDriverLocation(location) {
 }
 
 
-/* =====================================================
-   START LIVE LOCATION TRACKING
-===================================================== */
+/* =========================================================
+   START LOCATION TRACKING
+   ========================================================= */
 
 function startLocationTracking() {
 
-    if (!navigator.geolocation) {
+    if (
+        !navigator.geolocation
+    ) {
+
+        console.warn(
+            "Geolocation is not supported."
+        );
 
         return;
-
     }
 
 
@@ -360,11 +518,10 @@ function startLocationTracking() {
                 ) {
 
                     return;
-
                 }
 
 
-                sendDriverLocation({
+                const location = {
 
                     lat:
                         position.coords.latitude,
@@ -372,10 +529,14 @@ function startLocationTracking() {
                     lng:
                         position.coords.longitude
 
-                });
+                };
+
+
+                sendDriverLocation(
+                    location
+                );
 
             },
-
 
             function (error) {
 
@@ -386,14 +547,16 @@ function startLocationTracking() {
 
             },
 
-
             {
 
-                enableHighAccuracy: true,
+                enableHighAccuracy:
+                    true,
 
-                maximumAge: 5000,
+                maximumAge:
+                    5000,
 
-                timeout: 10000
+                timeout:
+                    10000
 
             }
 
@@ -402,9 +565,9 @@ function startLocationTracking() {
 }
 
 
-/* =====================================================
+/* =========================================================
    STOP LOCATION TRACKING
-===================================================== */
+   ========================================================= */
 
 function stopLocationTracking() {
 
@@ -416,16 +579,16 @@ function stopLocationTracking() {
             locationWatcher
         );
 
-        locationWatcher = null;
-
+        locationWatcher =
+            null;
     }
 
 }
 
 
-/* =====================================================
-   UPDATE DRIVER ONLINE UI
-===================================================== */
+/* =========================================================
+   UPDATE ONLINE UI
+   ========================================================= */
 
 function updateDriverOnlineUI() {
 
@@ -462,9 +625,9 @@ function updateDriverOnlineUI() {
 }
 
 
-/* =====================================================
+/* =========================================================
    GO ONLINE / OFFLINE
-===================================================== */
+   ========================================================= */
 
 async function setOnline() {
 
@@ -478,7 +641,6 @@ async function setOnline() {
         );
 
         return;
-
     }
 
 
@@ -494,7 +656,8 @@ async function setOnline() {
 
     if (button) {
 
-        button.disabled = true;
+        button.disabled =
+            true;
 
     }
 
@@ -534,7 +697,7 @@ async function setOnline() {
                         "POST",
 
                     headers:
-                        authHeaders(),
+                        getAuthHeaders(),
 
                     body:
                         JSON.stringify({
@@ -553,7 +716,11 @@ async function setOnline() {
 
 
         const data =
-            await response.json();
+            await response
+                .json()
+                .catch(
+                    () => ({})
+                );
 
 
         if (
@@ -631,10 +798,8 @@ async function setOnline() {
 
 
         alert(
-
             error.message ||
             "Unable to connect to server."
-
         );
 
     }
@@ -643,7 +808,8 @@ async function setOnline() {
 
         if (button) {
 
-            button.disabled = false;
+            button.disabled =
+                false;
 
         }
 
@@ -652,16 +818,15 @@ async function setOnline() {
 }
 
 
-/* =====================================================
+/* =========================================================
    SOCKET CONNECTION
-===================================================== */
+   ========================================================= */
 
 if (socket) {
 
+
     socket.on(
-
         "connect",
-
         function () {
 
             console.log(
@@ -675,7 +840,6 @@ if (socket) {
 
 
             if (
-                online &&
                 driverId
             ) {
 
@@ -687,17 +851,22 @@ if (socket) {
             }
 
         }
-
     );
 
 
-    /* NEW RIDE */
+    /* =====================================================
+       NEW RIDE
+       ===================================================== */
 
     socket.on(
-
         "ride:new",
-
         function (ride) {
+
+            console.log(
+                "New GoRide request:",
+                ride
+            );
+
 
             if (
                 !online ||
@@ -714,31 +883,162 @@ if (socket) {
             );
 
         }
-
     );
 
 
-    /* RIDE UPDATE */
+    /* =====================================================
+       RIDE UPDATE
+       ===================================================== */
 
     socket.on(
-
         "ride:update",
-
         function (ride) {
+
+            console.log(
+                "Ride updated:",
+                ride
+            );
+
+
+            if (
+                !ride ||
+                !ride._id
+            ) {
+
+                return;
+
+            }
+
+
+            /*
+             * If this is our active ride,
+             * keep local storage synchronized.
+             */
+
+            const currentRide =
+                getActiveRide();
+
+
+            if (
+                currentRide &&
+                String(
+                    currentRide._id
+                ) ===
+                String(
+                    ride._id
+                )
+            ) {
+
+                saveActiveRide(
+                    ride
+                );
+
+
+                activeRideMode =
+                    hasActiveDriverRide();
+
+
+                /*
+                 * If active-ride.html has
+                 * renderRide(), update it.
+                 */
+
+                if (
+                    typeof window.renderRide ===
+                    "function"
+                ) {
+
+                    window.renderRide();
+
+                }
+
+            }
+
 
             updateRideRequest(
                 ride
             );
 
         }
-
     );
 
 
+    /* =====================================================
+       DRIVER LOCATION CONFIRMATION
+       ===================================================== */
+
     socket.on(
+        "driver:location",
+        function (data) {
 
+            console.log(
+                "Driver location:",
+                data
+            );
+
+        }
+    );
+
+
+    /* =====================================================
+       RIDE ACCEPTED BY OTHER DRIVER
+       ===================================================== */
+
+    socket.on(
+        "ride:accepted",
+        function (data) {
+
+            if (!data) {
+
+                return;
+
+            }
+
+
+            const currentDriverId =
+                getDriverId();
+
+
+            /*
+             * Remove the ride request from
+             * this driver's screen if another
+             * driver accepted it.
+             */
+
+            if (
+                data.driverId &&
+                String(
+                    data.driverId
+                ) !==
+                String(
+                    currentDriverId
+                )
+            ) {
+
+                const card =
+                    document.querySelector(
+                        `[data-ride-id="${data.rideId}"]`
+                    );
+
+
+                if (card) {
+
+                    card.remove();
+
+                }
+
+            }
+
+        }
+    );
+
+
+    /* =====================================================
+       DISCONNECT
+       ===================================================== */
+
+    socket.on(
         "disconnect",
-
         function () {
 
             console.log(
@@ -746,17 +1046,18 @@ if (socket) {
             );
 
         }
-
     );
 
 }
 
 
-/* =====================================================
+/* =========================================================
    ADD RIDE REQUEST
-===================================================== */
+   ========================================================= */
 
-function addRideRequest(ride) {
+function addRideRequest(
+    ride
+) {
 
     const requests =
         document.getElementById(
@@ -794,13 +1095,9 @@ function addRideRequest(ride) {
 
 
     if (
-
         document.querySelector(
-
             `[data-ride-id="${ride._id}"]`
-
         )
-
     ) {
 
         return;
@@ -831,12 +1128,10 @@ function addRideRequest(ride) {
             </strong>
 
             <span class="ride-status">
-
                 ${escapeHTML(
                     ride.vehicleType ||
                     "Ride"
                 )}
-
             </span>
 
         </div>
@@ -855,15 +1150,10 @@ function addRideRequest(ride) {
                     </small>
 
                     <strong>
-
                         ${escapeHTML(
-
                             ride.pickup?.name ||
-
                             "Pickup location"
-
                         )}
-
                     </strong>
 
                 </div>
@@ -873,9 +1163,7 @@ function addRideRequest(ride) {
 
             <div>
 
-                <span
-                    class="dot destination-dot"
-                ></span>
+                <span class="dot destination-dot"></span>
 
                 <div>
 
@@ -884,15 +1172,10 @@ function addRideRequest(ride) {
                     </small>
 
                     <strong>
-
                         ${escapeHTML(
-
                             ride.destination?.name ||
-
                             "Destination"
-
                         )}
-
                     </strong>
 
                 </div>
@@ -915,6 +1198,17 @@ function addRideRequest(ride) {
             </span>
 
 
+            <span>
+
+                ⏱️
+                ${Number(
+                    ride.estimatedTime || 0
+                )}
+                min
+
+            </span>
+
+
             <strong>
 
                 ₹${Math.round(
@@ -929,13 +1223,9 @@ function addRideRequest(ride) {
         <div class="ride-actions">
 
             <button
-
                 type="button"
-
                 class="primary"
-
                 onclick="acceptRide('${ride._id}')"
-
             >
 
                 Accept
@@ -944,13 +1234,9 @@ function addRideRequest(ride) {
 
 
             <button
-
                 type="button"
-
                 class="secondary"
-
                 onclick="skipRide('${ride._id}')"
-
             >
 
                 Skip
@@ -982,11 +1268,13 @@ function addRideRequest(ride) {
 }
 
 
-/* =====================================================
+/* =========================================================
    ACCEPT RIDE
-===================================================== */
+   ========================================================= */
 
-async function acceptRide(id) {
+async function acceptRide(
+    id
+) {
 
     if (!id) {
 
@@ -1022,7 +1310,7 @@ async function acceptRide(id) {
                         "POST",
 
                     headers:
-                        authHeaders()
+                        getAuthHeaders()
 
                 }
 
@@ -1030,7 +1318,11 @@ async function acceptRide(id) {
 
 
         const data =
-            await response.json();
+            await response
+                .json()
+                .catch(
+                    () => ({})
+                );
 
 
         if (
@@ -1048,14 +1340,12 @@ async function acceptRide(id) {
         }
 
 
-        localStorage.setItem(
+        /*
+         * Save accepted ride.
+         */
 
-            "driver_active_ride",
-
-            JSON.stringify(
-                data.ride
-            )
-
+        saveActiveRide(
+            data.ride
         );
 
 
@@ -1063,14 +1353,21 @@ async function acceptRide(id) {
             true;
 
 
+        /*
+         * Continue GPS during
+         * the active ride.
+         */
+
         startLocationTracking();
 
 
+        /*
+         * Remove request card.
+         */
+
         const card =
             document.querySelector(
-
                 `[data-ride-id="${id}"]`
-
             );
 
 
@@ -1080,6 +1377,10 @@ async function acceptRide(id) {
 
         }
 
+
+        /*
+         * Open driver active ride.
+         */
 
         window.location.href =
             "active-ride.html";
@@ -1095,10 +1396,8 @@ async function acceptRide(id) {
 
 
         alert(
-
             error.message ||
             "Unable to accept ride."
-
         );
 
     }
@@ -1106,17 +1405,17 @@ async function acceptRide(id) {
 }
 
 
-/* =====================================================
+/* =========================================================
    SKIP RIDE
-===================================================== */
+   ========================================================= */
 
-function skipRide(id) {
+function skipRide(
+    id
+) {
 
     const card =
         document.querySelector(
-
             `[data-ride-id="${id}"]`
-
         );
 
 
@@ -1129,11 +1428,13 @@ function skipRide(id) {
 }
 
 
-/* =====================================================
+/* =========================================================
    UPDATE RIDE REQUEST
-===================================================== */
+   ========================================================= */
 
-function updateRideRequest(ride) {
+function updateRideRequest(
+    ride
+) {
 
     if (
         !ride ||
@@ -1147,11 +1448,15 @@ function updateRideRequest(ride) {
 
     const card =
         document.querySelector(
-
             `[data-ride-id="${ride._id}"]`
-
         );
 
+
+    /*
+     * Accepted, cancelled or completed
+     * rides should disappear from the
+     * request list.
+     */
 
     if (
         ride.status !==
@@ -1169,90 +1474,235 @@ function updateRideRequest(ride) {
 }
 
 
-/* =====================================================
-   UPDATE RIDE STATUS
-===================================================== */
-async function updateRideStatus(status) {
+/* =========================================================
+   UPDATE ACTIVE RIDE STATUS
+   ========================================================= */
 
-    if (!activeRide || !activeRide._id) {
-        alert("No active ride found.");
+async function updateRideStatus(
+    status
+) {
+
+    /*
+     * IMPORTANT:
+     * Always reload the ride from
+     * localStorage before updating.
+     */
+
+    const ride =
+        getActiveRide();
+
+
+    if (
+        !ride ||
+        !ride._id
+    ) {
+
+        alert(
+            "No active ride found."
+        );
+
         return;
+
     }
+
 
     const token =
-        localStorage.getItem("token") ||
-        localStorage.getItem("goride_token");
+        getToken();
+
 
     if (!token) {
-        alert("Please login again.");
+
+        alert(
+            "Please login again."
+        );
+
         return;
+
     }
+
+
+    /*
+     * Prevent invalid status changes.
+     */
+
+    const allowedStatuses = [
+
+        "DRIVER_ARRIVING",
+
+        "DRIVER_AT_PICKUP",
+
+        "RIDE_STARTED",
+
+        "RIDE_COMPLETED",
+
+        "CANCELLED"
+
+    ];
+
+
+    if (
+        !allowedStatuses.includes(
+            status
+        )
+    ) {
+
+        alert(
+            "Invalid ride status."
+        );
+
+        return;
+
+    }
+
 
     try {
 
-        const response = await fetch(
-            API_BASE +
-            "/api/rides/" +
-            activeRide._id +
-            "/status",
-            {
-                method: "POST",
-
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + token
-                },
-
-                body: JSON.stringify({
-                    status: status
-                })
-            }
+        console.log(
+            "Updating ride status:",
+            status
         );
 
-        const data = await response.json().catch(() => ({}));
 
-        if (!response.ok) {
+        const response =
+            await fetch(
 
-            alert(
-                data.message ||
-                data.error ||
-                "Unable to update ride status."
+                API_BASE +
+                "/api/rides/" +
+                ride._id +
+                "/status",
+
+                {
+
+                    method:
+                        "POST",
+
+                    headers:
+                        getAuthHeaders(),
+
+                    body:
+                        JSON.stringify({
+
+                            status:
+                                status
+
+                        })
+
+                }
+
             );
 
-            return;
-        }
+
+        const data =
+            await response
+                .json()
+                .catch(
+                    () => ({})
+                );
+
 
         console.log(
-            "Ride status updated:",
+            "Status API response:",
             data
         );
 
-        if (data.ride) {
 
-            activeRide = data.ride;
+        if (
+            !response.ok ||
+            !data.success
+        ) {
 
-        } else if (data) {
+            throw new Error(
 
-            activeRide = {
-                ...activeRide,
-                ...data
-            };
+                data.message ||
+                data.error ||
+                "Unable to update ride status."
+
+            );
 
         }
 
-        localStorage.setItem(
-            "driver_active_ride",
-            JSON.stringify(activeRide)
-        );
-
-        renderRide();
 
         /*
-         * If the server/socket sends the updated
-         * ride, passenger will receive it too.
+         * Store updated ride.
          */
 
-        if (status === "DRIVER_AT_PICKUP") {
+        if (data.ride) {
+
+            saveActiveRide(
+                data.ride
+            );
+
+        }
+
+        else {
+
+            saveActiveRide({
+
+                ...ride,
+
+                status:
+                    status
+
+            });
+
+        }
+
+
+        /*
+         * Recalculate active mode.
+         */
+
+        activeRideMode =
+            hasActiveDriverRide();
+
+
+        /*
+         * Keep GPS alive while
+         * ride is active.
+         */
+
+        if (activeRideMode) {
+
+            startLocationTracking();
+
+        }
+
+
+        /*
+         * Update active-ride page
+         * if its render function exists.
+         */
+
+        if (
+            typeof window.renderRide ===
+            "function"
+        ) {
+
+            window.renderRide();
+
+        }
+
+
+        /*
+         * Status messages.
+         */
+
+        if (
+            status ===
+            "DRIVER_ARRIVING"
+        ) {
+
+            alert(
+                "Driver is arriving."
+            );
+
+        }
+
+
+        if (
+            status ===
+            "DRIVER_AT_PICKUP"
+        ) {
 
             alert(
                 "Driver marked as arrived."
@@ -1260,7 +1710,11 @@ async function updateRideStatus(status) {
 
         }
 
-        if (status === "RIDE_STARTED") {
+
+        if (
+            status ===
+            "RIDE_STARTED"
+        ) {
 
             alert(
                 "Ride started successfully."
@@ -1268,40 +1722,95 @@ async function updateRideStatus(status) {
 
         }
 
-        if (status === "RIDE_COMPLETED") {
+
+        if (
+            status ===
+            "RIDE_COMPLETED"
+        ) {
 
             alert(
                 "Ride completed successfully."
             );
 
-            setTimeout(() => {
 
-                window.location.href =
-                    "history.html";
+            saveActiveRide(
+                null
+            );
 
-            }, 1200);
+
+            stopLocationTracking();
+
+
+            setTimeout(
+                function () {
+
+                    window.location.href =
+                        "history.html";
+
+                },
+                1200
+            );
 
         }
 
-    } catch (error) {
+
+        if (
+            status ===
+            "CANCELLED"
+        ) {
+
+            alert(
+                "Ride cancelled."
+            );
+
+
+            saveActiveRide(
+                null
+            );
+
+
+            stopLocationTracking();
+
+
+            setTimeout(
+                function () {
+
+                    window.location.href =
+                        "dashboard.html";
+
+                },
+                1000
+            );
+
+        }
+
+    }
+
+    catch (error) {
 
         console.error(
             "Ride status error:",
             error
         );
 
+
         alert(
-            "Unable to connect to server."
+            error.message ||
+            "Unable to update ride status."
         );
+
     }
+
 }
 
 
-/* =====================================================
+/* =========================================================
    ESCAPE HTML
-===================================================== */
+   ========================================================= */
 
-function escapeHTML(value) {
+function escapeHTML(
+    value
+) {
 
     return String(
         value || ""
@@ -1335,17 +1844,28 @@ function escapeHTML(value) {
 }
 
 
-/* =====================================================
-   CHECK ACTIVE RIDE WHEN PAGE LOADS
-===================================================== */
+/* =========================================================
+   REFRESH ACTIVE RIDE MODE
+   ========================================================= */
 
 function refreshActiveRideMode() {
+
+    activeRide =
+        getActiveRide();
+
 
     activeRideMode =
         hasActiveDriverRide();
 
 
     if (activeRideMode) {
+
+        /*
+         * Keep driver GPS alive after
+         * opening active-ride.html.
+         */
+
+        online = true;
 
         startLocationTracking();
 
@@ -1354,19 +1874,22 @@ function refreshActiveRideMode() {
 }
 
 
-/* =====================================================
+/* =========================================================
    INITIALIZE
-===================================================== */
+   ========================================================= */
 
 document.addEventListener(
-
     "DOMContentLoaded",
-
     function () {
 
         refreshActiveRideMode();
 
         updateDriverOnlineUI();
+
+
+        console.log(
+            "================================"
+        );
 
         console.log(
             "GoRide driver.js loaded"
@@ -1377,14 +1900,27 @@ document.addEventListener(
             API_BASE
         );
 
-    }
+        console.log(
+            "Driver ID:",
+            getDriverId()
+        );
 
+        console.log(
+            "Active Ride:",
+            getActiveRide()
+        );
+
+        console.log(
+            "================================"
+        );
+
+    }
 );
 
 
-/* =====================================================
+/* =========================================================
    MAKE FUNCTIONS AVAILABLE TO HTML
-===================================================== */
+   ========================================================= */
 
 window.setOnline =
     setOnline;
@@ -1407,7 +1943,14 @@ window.startLocationTracking =
 window.stopLocationTracking =
     stopLocationTracking;
 
+window.getActiveRide =
+    getActiveRide;
+
+
+/* =========================================================
+   READY
+   ========================================================= */
 
 console.log(
-    "GoRide DRIVER.JS Step 3 ready."
+    "GoRide DRIVER.JS corrected version ready."
 );
