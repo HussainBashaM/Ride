@@ -3,263 +3,293 @@
 
 <head>
 
-<meta charset="utf-8">
+    <meta charset="utf-8">
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1"
->
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
 
-<title>Live Ride — GoRide</title>
+    <title>Live Ride — GoRide</title>
 
-<link
-    rel="stylesheet"
-    href="../css/style.css"
->
+    <link
+        rel="stylesheet"
+        href="../css/style.css"
+    >
 
-<style>
+    <style>
 
-*{
-    box-sizing:border-box;
-}
+        * {
+            box-sizing: border-box;
+        }
 
-body{
-    margin:0;
-    background:#f7f5ff;
-    color:#20202a;
-    font-family:Arial,sans-serif;
-}
+        body {
+            margin: 0;
+            background: #f7f5ff;
+            color: #20202a;
+            font-family: Arial, sans-serif;
+        }
 
-.live-app{
-    width:100%;
-    max-width:700px;
-    margin:auto;
-    min-height:100vh;
-    padding-bottom:30px;
-}
+        .live-app {
+            width: 100%;
+            max-width: 700px;
+            margin: auto;
+            min-height: 100vh;
+            padding-bottom: 30px;
+        }
 
-.live-topbar{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:18px 20px;
-    background:white;
-}
+        .live-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 20px;
+            background: white;
+        }
 
-.brand{
-    text-decoration:none;
-    color:#222;
-    font-size:26px;
-    font-weight:800;
-}
+        .brand {
+            text-decoration: none;
+            color: #222;
+            font-size: 26px;
+            font-weight: 800;
+        }
 
-.brand span{
-    color:#7c3aed;
-}
+        .brand span {
+            color: #7c3aed;
+        }
 
-.live-badge{
-    padding:8px 12px;
-    border-radius:20px;
-    background:#e9f9ef;
-    color:#188044;
-    font-size:12px;
-    font-weight:700;
-}
+        .live-badge {
+            padding: 8px 12px;
+            border-radius: 20px;
+            background: #e9f9ef;
+            color: #188044;
+            font-size: 12px;
+            font-weight: 700;
+        }
 
-.status-card,
-.ride-card,
-.driver-card{
-    margin:16px;
-    padding:20px;
-    border-radius:20px;
-    background:white;
-    box-shadow:0 8px 25px rgba(80,50,130,.08);
-}
+        .status-card {
+            margin: 16px;
+            padding: 20px;
+            border-radius: 20px;
+            background: white;
+            box-shadow:
+                0 8px 25px rgba(80, 50, 130, .08);
+        }
 
-.status-label{
-    color:#777;
-    font-size:12px;
-    margin-bottom:6px;
-}
+        .status-label {
+            color: #777;
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
 
-#rideStatus{
-    margin:0;
-    color:#6d28d9;
-    font-size:23px;
-}
+        #rideStatus {
+            margin: 0;
+            color: #6d28d9;
+            font-size: 23px;
+        }
 
-#statusMessage{
-    margin:8px 0 0;
-    color:#777;
-    font-size:14px;
-    line-height:1.5;
-}
+        #statusMessage {
+            margin: 8px 0 0;
+            color: #777;
+            font-size: 14px;
+            line-height: 1.5;
+        }
 
-.map-wrap{
-    margin:16px;
-    overflow:hidden;
-    border-radius:22px;
-    background:white;
-    box-shadow:0 8px 25px rgba(80,50,130,.10);
-}
+        .map-wrap {
+            margin: 16px;
+            overflow: hidden;
+            border-radius: 22px;
+            background: white;
+            box-shadow:
+                0 8px 25px rgba(80, 50, 130, .10);
+        }
 
-#map{
-    width:100%;
-    height:350px;
-    position:relative;
-}
+        #map {
+            width: 100%;
+            height: 350px;
+            position: relative;
+        }
 
-.map-badge{
-    position:absolute;
-    z-index:500;
-    top:14px;
-    left:14px;
-    padding:9px 13px;
-    border-radius:20px;
-    background:white;
-    box-shadow:0 4px 15px rgba(0,0,0,.12);
-    font-size:12px;
-    font-weight:600;
-}
+        .map-badge {
+            position: absolute;
+            z-index: 500;
+            top: 14px;
+            left: 14px;
+            padding: 9px 13px;
+            border-radius: 20px;
+            background: white;
+            box-shadow:
+                0 4px 15px rgba(0,0,0,.12);
+            font-size: 12px;
+            font-weight: 600;
+        }
 
-.ride-title{
-    margin:0 0 18px;
-    font-size:18px;
-}
+        .ride-card {
+            margin: 16px;
+            padding: 20px;
+            border-radius: 20px;
+            background: white;
+            box-shadow:
+                0 8px 25px rgba(80, 50, 130, .08);
+        }
 
-.location{
-    display:flex;
-    gap:12px;
-    margin-bottom:16px;
-}
+        .ride-title {
+            margin: 0 0 18px;
+            font-size: 18px;
+        }
 
-.dot{
-    width:12px;
-    height:12px;
-    margin-top:5px;
-    border-radius:50%;
-    background:#22a95a;
-    flex-shrink:0;
-}
+        .location {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
 
-.dot.destination{
-    background:#7c3aed;
-}
+        .dot {
+            width: 12px;
+            height: 12px;
+            margin-top: 5px;
+            border-radius: 50%;
+            background: #22a95a;
+            flex-shrink: 0;
+        }
 
-.location small{
-    display:block;
-    color:#777;
-    margin-bottom:4px;
-}
+        .dot.destination {
+            background: #7c3aed;
+        }
 
-.location strong{
-    display:block;
-    font-size:14px;
-    line-height:1.4;
-}
+        .location small {
+            display: block;
+            color: #777;
+            margin-bottom: 4px;
+        }
 
-.details{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:8px;
-    padding:14px;
-    margin-top:5px;
-    border-radius:16px;
-    background:#f7f6fa;
-    text-align:center;
-}
+        .location strong {
+            display: block;
+            font-size: 14px;
+            line-height: 1.4;
+            word-break: break-word;
+        }
 
-.details span{
-    display:block;
-    color:#777;
-    font-size:11px;
-    margin-bottom:5px;
-}
+        .details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            padding: 14px;
+            margin-top: 5px;
+            border-radius: 16px;
+            background: #f7f6fa;
+            text-align: center;
+        }
 
-.details b{
-    font-size:15px;
-}
+        .details span {
+            display: block;
+            color: #777;
+            font-size: 11px;
+            margin-bottom: 5px;
+        }
 
-.driver-title{
-    margin:0 0 8px;
-    font-size:17px;
-}
+        .details b {
+            font-size: 15px;
+        }
 
-.driver-message{
-    margin:0;
-    color:#777;
-    font-size:14px;
-    line-height:1.5;
-}
+        .driver-card {
+            margin: 16px;
+            padding: 20px;
+            border-radius: 20px;
+            background: white;
+            box-shadow:
+                0 8px 25px rgba(80, 50, 130, .08);
+        }
 
-.driver-info{
-    margin-top:15px;
-    padding:14px;
-    border-radius:15px;
-    background:#f7f4ff;
-}
+        .driver-title {
+            margin: 0 0 15px;
+            font-size: 18px;
+        }
 
-.driver-info div{
-    margin-bottom:8px;
-}
+        .driver-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
 
-.driver-info div:last-child{
-    margin-bottom:0;
-}
+        .driver-item {
+            padding: 12px;
+            border-radius: 14px;
+            background: #f7f6fa;
+        }
 
-.driver-info span{
-    color:#777;
-    font-size:12px;
-}
+        .driver-item span {
+            display: block;
+            color: #777;
+            font-size: 11px;
+            margin-bottom: 5px;
+        }
 
-.driver-info b{
-    display:block;
-    margin-top:3px;
-    color:#333;
-}
+        .driver-item b {
+            font-size: 14px;
+        }
 
-.actions{
-    margin:16px;
-}
+        .driver-message {
+            margin: 0;
+            color: #777;
+            font-size: 14px;
+            line-height: 1.5;
+        }
 
-.action-btn{
-    width:100%;
-    border:0;
-    border-radius:16px;
-    padding:15px;
-    font-size:16px;
-    font-weight:700;
-    cursor:pointer;
-    margin-bottom:10px;
-}
+        .driver-live {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 14px;
+            background: #e9f9ef;
+            color: #188044;
+            font-size: 13px;
+            font-weight: 700;
+        }
 
-.danger-btn{
-    background:#ffe9e9;
-    color:#c62828;
-}
+        .actions {
+            margin: 16px;
+        }
 
-.secondary-btn{
-    background:#eee8ff;
-    color:#6d28d9;
-}
+        .action-btn {
+            width: 100%;
+            border: 0;
+            border-radius: 16px;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
 
-.hidden{
-    display:none !important;
-}
+        .danger-btn {
+            background: #ffe9e9;
+            color: #c62828;
+        }
 
-@media(max-width:380px){
+        .secondary-btn {
+            background: #eee8ff;
+            color: #6d28d9;
+        }
 
-    .details{
-        grid-template-columns:1fr;
-    }
+        .hidden {
+            display: none !important;
+        }
 
-    #map{
-        height:300px;
-    }
+        @media (max-width: 380px) {
 
-}
+            .details {
+                grid-template-columns: 1fr;
+            }
 
-</style>
+            .driver-info {
+                grid-template-columns: 1fr;
+            }
+
+            #map {
+                height: 300px;
+            }
+        }
+
+    </style>
 
 </head>
 
@@ -269,246 +299,275 @@ body{
 <div class="live-app">
 
 
-<header class="live-topbar">
+    <!-- TOP BAR -->
 
-<a
-    class="brand"
-    href="../index.html"
->
-    Go<span>Ride</span>
-</a>
+    <header class="live-topbar">
 
-<span
-    id="liveBadge"
-    class="live-badge"
->
-    ● LIVE
-</span>
+        <a
+            class="brand"
+            href="../index.html"
+        >
+            Go<span>Ride</span>
+        </a>
 
-</header>
+        <span
+            id="liveBadge"
+            class="live-badge"
+        >
+            ● LIVE
+        </span>
+
+    </header>
 
 
-<!-- ================= STATUS ================= -->
+    <!-- STATUS -->
 
-<section class="status-card">
+    <section class="status-card">
 
-<div class="status-label">
-    CURRENT RIDE STATUS
+        <div class="status-label">
+            CURRENT RIDE STATUS
+        </div>
+
+        <h2 id="rideStatus">
+            Searching for driver...
+        </h2>
+
+        <p id="statusMessage">
+            Your ride request has been sent
+            to nearby drivers.
+        </p>
+
+    </section>
+
+
+    <!-- MAP -->
+
+    <section class="map-wrap">
+
+        <div id="map">
+
+            <div class="map-badge">
+                🛵 Driver location updates live
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- RIDE DETAILS -->
+
+    <section class="ride-card">
+
+        <h3 class="ride-title">
+            Your Ride
+        </h3>
+
+
+        <div class="location">
+
+            <span class="dot"></span>
+
+            <div>
+
+                <small>
+                    Pickup
+                </small>
+
+                <strong id="pickup">
+                    Loading...
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="location">
+
+            <span class="dot destination"></span>
+
+            <div>
+
+                <small>
+                    Destination
+                </small>
+
+                <strong id="destination">
+                    Loading...
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="details">
+
+            <div>
+
+                <span>
+                    Vehicle
+                </span>
+
+                <b id="vehicle">
+                    --
+                </b>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Distance
+                </span>
+
+                <b id="distance">
+                    --
+                </b>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Fare
+                </span>
+
+                <b id="fare">
+                    ₹--
+                </b>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- DRIVER -->
+
+    <section
+        class="driver-card"
+        id="driverCard"
+    >
+
+        <h3 class="driver-title">
+            🛵 Driver
+        </h3>
+
+
+        <p
+            id="driverMessage"
+            class="driver-message"
+        >
+            Searching for a nearby driver...
+        </p>
+
+
+        <div
+            id="driverInfo"
+            class="driver-info hidden"
+        >
+
+            <div class="driver-item">
+
+                <span>
+                    Driver
+                </span>
+
+                <b id="driverName">
+                    --
+                </b>
+
+            </div>
+
+
+            <div class="driver-item">
+
+                <span>
+                    Phone
+                </span>
+
+                <b id="driverPhone">
+                    --
+                </b>
+
+            </div>
+
+
+            <div class="driver-item">
+
+                <span>
+                    Vehicle
+                </span>
+
+                <b id="driverVehicle">
+                    --
+                </b>
+
+            </div>
+
+
+            <div class="driver-item">
+
+                <span>
+                    Vehicle Number
+                </span>
+
+                <b id="driverVehicleNumber">
+                    --
+                </b>
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="driverLive"
+            class="driver-live hidden"
+        >
+            🟢 Driver location is updating live
+        </div>
+
+    </section>
+
+
+    <!-- ACTIONS -->
+
+    <section class="actions">
+
+        <button
+            id="cancelBtn"
+            class="action-btn danger-btn"
+            onclick="cancelRide()"
+        >
+            ❌ Cancel Ride
+        </button>
+
+
+        <button
+            class="action-btn secondary-btn"
+            onclick="goDashboard()"
+        >
+            Back to Dashboard
+        </button>
+
+    </section>
+
+
 </div>
 
-<h2 id="rideStatus">
-    Searching for driver...
-</h2>
 
-<p id="statusMessage">
-    Your ride request has been sent to nearby drivers.
-</p>
-
-</section>
-
-
-<!-- ================= MAP ================= -->
-
-<section class="map-wrap">
-
-<div id="map">
-
-<div class="map-badge">
-    🛵 Driver location updates live
-</div>
-
-</div>
-
-</section>
-
-
-<!-- ================= RIDE DETAILS ================= -->
-
-<section class="ride-card">
-
-<h3 class="ride-title">
-    Your Ride
-</h3>
-
-
-<div class="location">
-
-<span class="dot"></span>
-
-<div>
-
-<small>
-    Pickup
-</small>
-
-<strong id="pickup">
-    Loading...
-</strong>
-
-</div>
-
-</div>
-
-
-<div class="location">
-
-<span class="dot destination"></span>
-
-<div>
-
-<small>
-    Destination
-</small>
-
-<strong id="destination">
-    Loading...
-</strong>
-
-</div>
-
-</div>
-
-
-<div class="details">
-
-<div>
-
-<span>
-    Vehicle
-</span>
-
-<b id="vehicle">
-    --
-</b>
-
-</div>
-
-
-<div>
-
-<span>
-    Distance
-</span>
-
-<b id="distance">
-    --
-</b>
-
-</div>
-
-
-<div>
-
-<span>
-    Fare
-</span>
-
-<b id="fare">
-    ₹--
-</b>
-
-</div>
-
-</div>
-
-</section>
-
-
-<!-- ================= DRIVER ================= -->
-
-<section
-    class="driver-card"
-    id="driverCard"
->
-
-<h3 class="driver-title">
-    🛵 Driver
-</h3>
-
-<p
-    id="driverMessage"
-    class="driver-message"
->
-    Searching for a nearby driver...
-</p>
-
-
-<div
-    id="driverInfo"
-    class="driver-info hidden"
->
-
-<div>
-
-<span>
-    Driver
-</span>
-
-<b id="driverName">
-    --
-</b>
-
-</div>
-
-
-<div>
-
-<span>
-    Vehicle
-</span>
-
-<b id="driverVehicle">
-    --
-</b>
-
-</div>
-
-
-<div>
-
-<span>
-    Vehicle Number
-</span>
-
-<b id="driverVehicleNumber">
-    --
-</b>
-
-</div>
-
-</div>
-
-</section>
-
-
-<!-- ================= ACTIONS ================= -->
-
-<section class="actions">
-
-<button
-    id="cancelBtn"
-    class="action-btn danger-btn"
-    onclick="cancelRide()"
->
-    ❌ Cancel Ride
-</button>
-
-
-<button
-    class="action-btn secondary-btn"
-    onclick="goDashboard()"
->
-    Back to Dashboard
-</button>
-
-</section>
-
-</div>
-
-
-<!-- ================= SOCKET.IO ================= -->
+<!-- SOCKET.IO -->
 
 <script src="https://cdn.socket.io/4.8.0/socket.io.min.js"></script>
+
+
+<!-- APP -->
 
 <script src="../js/app.js"></script>
 
@@ -517,537 +576,959 @@ body{
 
 <script>
 
-/* =====================================================
-   ACTIVE RIDE
-   ===================================================== */
+    /* =====================================================
+       API
+       ===================================================== */
 
-let activeRide =
-    JSON.parse(
-        localStorage.getItem(
-            "goride_active_ride"
-        ) || "null"
-    );
-
-
-/* =====================================================
-   API
-   ===================================================== */
-
-const API_BASE =
-    window.GORIDE_API ||
-    window.API_BASE_URL ||
-    localStorage.getItem("API_BASE_URL") ||
-    "https://ride-f6la.onrender.com";
+    const API_BASE =
+        window.GORIDE_API ||
+        window.API_BASE_URL ||
+        localStorage.getItem("API_BASE_URL") ||
+        "https://ride-f6la.onrender.com";
 
 
-/* =====================================================
-   DOM
-   ===================================================== */
+    /* =====================================================
+       ACTIVE RIDE
+       ===================================================== */
 
-const rideStatus =
-    document.getElementById("rideStatus");
-
-const statusMessage =
-    document.getElementById("statusMessage");
-
-const pickupElement =
-    document.getElementById("pickup");
-
-const destinationElement =
-    document.getElementById("destination");
-
-const vehicleElement =
-    document.getElementById("vehicle");
-
-const distanceElement =
-    document.getElementById("distance");
-
-const fareElement =
-    document.getElementById("fare");
-
-const driverMessage =
-    document.getElementById("driverMessage");
-
-const driverInfo =
-    document.getElementById("driverInfo");
-
-const driverName =
-    document.getElementById("driverName");
-
-const driverVehicle =
-    document.getElementById("driverVehicle");
-
-const driverVehicleNumber =
-    document.getElementById("driverVehicleNumber");
+    let activeRide = null;
 
 
-/* =====================================================
-   GET VALUE SAFELY
-   ===================================================== */
+    try {
 
-function getValue(obj, keys){
+        activeRide = JSON.parse(
+            localStorage.getItem(
+                "goride_active_ride"
+            ) || "null"
+        );
 
-    if(!obj) return "";
+    } catch (error) {
 
-    for(const key of keys){
+        console.error(
+            "Active ride data error:",
+            error
+        );
 
-        if(
-            obj[key] !== undefined &&
-            obj[key] !== null &&
-            obj[key] !== ""
-        ){
+        activeRide = null;
+    }
 
-            return obj[key];
 
+    /* =====================================================
+       USER
+       ===================================================== */
+
+    let currentUser = null;
+
+
+    try {
+
+        currentUser = JSON.parse(
+            localStorage.getItem("user") ||
+            localStorage.getItem("goride_user") ||
+            "null"
+        );
+
+    } catch (error) {
+
+        currentUser = null;
+    }
+
+
+    /* =====================================================
+       MAP VARIABLES
+       ===================================================== */
+
+    let liveMap = null;
+    let driverMarker = null;
+
+
+    /* =====================================================
+       GET MAP
+       ===================================================== */
+
+    function getRideMap() {
+
+        if (
+            window.GoRideMap &&
+            typeof window.GoRideMap.addLayer === "function"
+        ) {
+
+            return window.GoRideMap;
         }
 
-    }
 
-    return "";
+        if (
+            window.map &&
+            typeof window.map.addLayer === "function"
+        ) {
 
-}
-
-
-/* =====================================================
-   RENDER RIDE
-   ===================================================== */
-
-function renderRide(ride){
-
-    if(!ride) return;
+            return window.map;
+        }
 
 
-    /* RIDE DETAILS */
-
-    const pickup =
-        getValue(
-            ride,
-            [
-                "pickupAddress",
-                "pickupName",
-                "pickup",
-                "from"
-            ]
-        );
-
-    const destination =
-        getValue(
-            ride,
-            [
-                "destinationAddress",
-                "destinationName",
-                "destination",
-                "to"
-            ]
-        );
-
-    const vehicle =
-        getValue(
-            ride,
-            [
-                "vehicleType",
-                "vehicle",
-                "type"
-            ]
-        );
-
-    const distance =
-        getValue(
-            ride,
-            [
-                "distance",
-                "distanceKm"
-            ]
-        );
-
-    const fare =
-        getValue(
-            ride,
-            [
-                "fare",
-                "estimatedFare",
-                "price"
-            ]
-        );
-
-
-    if(pickup){
-
-        pickupElement.textContent =
-            pickup;
-
+        return null;
     }
 
 
-    if(destination){
+    /* =====================================================
+       FIND LEAFLET MAP
+       ===================================================== */
 
-        destinationElement.textContent =
-            destination;
+    function findLeafletMap() {
 
+        if (window.GoRideMap) {
+            return window.GoRideMap;
+        }
+
+        if (window.map) {
+            return window.map;
+        }
+
+        return null;
     }
 
 
-    if(vehicle){
+    /* =====================================================
+       DISPLAY RIDE
+       ===================================================== */
 
-        vehicleElement.textContent =
+    function renderRide() {
+
+        if (!activeRide) {
+
+            document.getElementById(
+                "rideStatus"
+            ).textContent =
+                "Waiting for ride...";
+
+            document.getElementById(
+                "statusMessage"
+            ).textContent =
+                "No active ride found.";
+
+            return;
+        }
+
+
+        const pickup =
+            activeRide.pickup ||
+            activeRide.pickupAddress ||
+            activeRide.from ||
+            activeRide.pickupLocation ||
+            "Current location";
+
+
+        const destination =
+            activeRide.destination ||
+            activeRide.destinationAddress ||
+            activeRide.to ||
+            activeRide.destinationLocation ||
+            "Destination";
+
+
+        const vehicle =
+            activeRide.vehicleType ||
+            activeRide.vehicle ||
+            "—";
+
+
+        const distance =
+            activeRide.distance;
+
+
+        const fare =
+            activeRide.fare;
+
+
+        document.getElementById(
+            "pickup"
+        ).textContent =
+            typeof pickup === "object"
+                ? (
+                    pickup.address ||
+                    pickup.name ||
+                    "Current location"
+                )
+                : pickup;
+
+
+        document.getElementById(
+            "destination"
+        ).textContent =
+            typeof destination === "object"
+                ? (
+                    destination.address ||
+                    destination.name ||
+                    "Destination"
+                )
+                : destination;
+
+
+        document.getElementById(
+            "vehicle"
+        ).textContent =
             vehicle;
 
-    }
+
+        document.getElementById(
+            "distance"
+        ).textContent =
+            distance !== undefined &&
+            distance !== null &&
+            distance !== ""
+                ? Number(distance).toFixed(1) + " km"
+                : "—";
 
 
-    if(distance){
-
-        const d =
-            Number(distance);
-
-        distanceElement.textContent =
-            Number.isFinite(d)
-                ? d.toFixed(1) + " km"
-                : distance;
-
-    }
+        document.getElementById(
+            "fare"
+        ).textContent =
+            fare !== undefined &&
+            fare !== null &&
+            fare !== ""
+                ? "₹" + Math.round(fare)
+                : "₹--";
 
 
-    if(fare){
-
-        const f =
-            Number(fare);
-
-        fareElement.textContent =
-            Number.isFinite(f)
-                ? "₹" + Math.round(f)
-                : "₹" + fare;
-
-    }
-
-
-    /* DRIVER */
-
-    const driver =
-        ride.driver ||
-        ride.acceptedDriver ||
-        ride.driverDetails ||
-        null;
-
-
-    if(
-        driver ||
-        ride.driverId ||
-        ride.driver_id
-    ){
-
-        showDriverAssigned(
-            ride,
-            driver
+        updateStatus(
+            activeRide.status ||
+            "SEARCHING_DRIVER"
         );
 
+
+        showDriverInfo(activeRide);
+
     }
 
 
-    updateStatusText(
-        ride.status
-    );
+    /* =====================================================
+       STATUS
+       ===================================================== */
 
-}
+    function updateStatus(status) {
 
-
-/* =====================================================
-   DRIVER ASSIGNED
-   ===================================================== */
-
-function showDriverAssigned(
-    ride,
-    driver
-){
-
-    rideStatus.textContent =
-        "Driver Assigned";
-
-    statusMessage.textContent =
-        "Your driver has accepted the ride and is on the way.";
-
-    driverMessage.textContent =
-        "🎉 A driver has accepted your ride.";
-
-    driverInfo.classList.remove(
-        "hidden"
-    );
+        const rideStatus =
+            document.getElementById(
+                "rideStatus"
+            );
 
 
-    const name =
-        getValue(
-            driver,
-            [
-                "name",
-                "fullName",
-                "driverName"
+        const statusMessage =
+            document.getElementById(
+                "statusMessage"
+            );
+
+
+        const messages = {
+
+            SEARCHING_DRIVER: [
+                "Searching for driver...",
+                "Your ride request has been sent to nearby drivers."
+            ],
+
+            DRIVER_ASSIGNED: [
+                "Driver Assigned",
+                "A driver has accepted your ride and is coming to your pickup location."
+            ],
+
+            DRIVER_ACCEPTED: [
+                "Driver Assigned",
+                "Your driver has accepted the ride."
+            ],
+
+            DRIVER_ARRIVING: [
+                "Driver Arriving",
+                "Your driver is on the way to the pickup location."
+            ],
+
+            DRIVER_AT_PICKUP: [
+                "Driver Arrived",
+                "Your driver has reached the pickup location."
+            ],
+
+            RIDE_STARTED: [
+                "Ride In Progress",
+                "Your ride has started."
+            ],
+
+            RIDE_COMPLETED: [
+                "Ride Completed",
+                "Your ride has been completed."
+            ],
+
+            CANCELLED: [
+                "Ride Cancelled",
+                "This ride has been cancelled."
             ]
-        );
+
+        };
 
 
-    const vehicle =
-        getValue(
-            driver,
+        const result =
+            messages[status] ||
             [
-                "vehicleType",
-                "vehicle",
-                "model"
-            ]
-        );
+                "Ride Active",
+                "Your ride is currently active."
+            ];
 
 
-    const vehicleNumber =
-        getValue(
-            driver,
-            [
-                "vehicleNumber",
-                "registrationNumber",
-                "registration"
-            ]
-        );
+        rideStatus.textContent =
+            result[0];
 
 
-    driverName.textContent =
-        name || "Driver assigned";
+        statusMessage.textContent =
+            result[1];
 
 
-    driverVehicle.textContent =
-        vehicle || "GoRide vehicle";
+        if (
+            status === "DRIVER_ASSIGNED" ||
+            status === "DRIVER_ACCEPTED" ||
+            status === "DRIVER_ARRIVING" ||
+            status === "DRIVER_AT_PICKUP" ||
+            status === "RIDE_STARTED"
+        ) {
 
+            document.getElementById(
+                "liveBadge"
+            ).textContent =
+                "● ACTIVE RIDE";
 
-    driverVehicleNumber.textContent =
-        vehicleNumber || "--";
-
-}
-
-
-/* =====================================================
-   STATUS
-   ===================================================== */
-
-function updateStatusText(status){
-
-    const messages = {
-
-        SEARCHING_DRIVER:{
-            title:"Searching for driver...",
-            message:"Your ride request has been sent to nearby drivers."
-        },
-
-        DRIVER_ASSIGNED:{
-            title:"Driver Assigned",
-            message:"Your driver has accepted the ride and is on the way."
-        },
-
-        DRIVER_ARRIVING:{
-            title:"Driver Arriving",
-            message:"Your driver is coming to the pickup location."
-        },
-
-        DRIVER_AT_PICKUP:{
-            title:"Driver Arrived",
-            message:"Your driver has arrived at the pickup location."
-        },
-
-        RIDE_STARTED:{
-            title:"Ride In Progress",
-            message:"Your ride has started. Enjoy your trip!"
-        },
-
-        RIDE_COMPLETED:{
-            title:"Ride Completed",
-            message:"Your ride has been completed successfully."
-        },
-
-        CANCELLED:{
-            title:"Ride Cancelled",
-            message:"This ride has been cancelled."
         }
 
-    };
+
+        if (
+            status === "RIDE_COMPLETED"
+        ) {
+
+            document.getElementById(
+                "liveBadge"
+            ).textContent =
+                "● COMPLETED";
+
+        }
 
 
-    const current =
-        messages[status] ||
-        messages.SEARCHING_DRIVER;
+        if (
+            status === "CANCELLED"
+        ) {
 
+            document.getElementById(
+                "liveBadge"
+            ).textContent =
+                "● CANCELLED";
 
-    rideStatus.textContent =
-        current.title;
-
-    statusMessage.textContent =
-        current.message;
-
-
-    if(status === "DRIVER_ASSIGNED"){
-
-        driverMessage.textContent =
-            "🎉 Driver accepted your ride.";
-
-    }
-
-
-    if(status === "DRIVER_ARRIVING"){
-
-        driverMessage.textContent =
-            "🛵 Your driver is coming to pickup.";
+        }
 
     }
 
 
-    if(status === "DRIVER_AT_PICKUP"){
+    /* =====================================================
+       DRIVER INFORMATION
+       ===================================================== */
 
-        driverMessage.textContent =
-            "📍 Your driver has arrived.";
+    function showDriverInfo(ride) {
+
+        const driver =
+            ride.driver ||
+            ride.driverDetails ||
+            null;
+
+
+        if (
+            !driver &&
+            !ride.driverId &&
+            !ride.driver_id
+        ) {
+
+            return;
+        }
+
+
+        document.getElementById(
+            "driverInfo"
+        ).classList.remove("hidden");
+
+
+        document.getElementById(
+            "driverMessage"
+        ).classList.add("hidden");
+
+
+        const name =
+            driver?.name ||
+            driver?.fullName ||
+            ride.driverName ||
+            "Driver";
+
+
+        const phone =
+            driver?.phone ||
+            driver?.mobile ||
+            ride.driverPhone ||
+            "--";
+
+
+        const vehicle =
+            driver?.vehicleType ||
+            driver?.vehicleModel ||
+            ride.driverVehicle ||
+            ride.vehicleType ||
+            "--";
+
+
+        const vehicleNumber =
+            driver?.vehicleNumber ||
+            driver?.registrationNumber ||
+            ride.driverVehicleNumber ||
+            "--";
+
+
+        document.getElementById(
+            "driverName"
+        ).textContent =
+            name;
+
+
+        document.getElementById(
+            "driverPhone"
+        ).textContent =
+            phone;
+
+
+        document.getElementById(
+            "driverVehicle"
+        ).textContent =
+            vehicle;
+
+
+        document.getElementById(
+            "driverVehicleNumber"
+        ).textContent =
+            vehicleNumber;
 
     }
 
 
-    if(status === "RIDE_STARTED"){
+    /* =====================================================
+       DRIVER LOCATION
+       ===================================================== */
 
-        driverMessage.textContent =
-            "🚕 Your ride is now in progress.";
+    function updateDriverLocation(data) {
+
+        if (!data) return;
+
+
+        const lat =
+            Number(
+                data.lat ??
+                data.latitude ??
+                data.location?.lat ??
+                data.location?.latitude
+            );
+
+
+        const lng =
+            Number(
+                data.lng ??
+                data.lon ??
+                data.longitude ??
+                data.location?.lng ??
+                data.location?.lon ??
+                data.location?.longitude
+            );
+
+
+        if (
+            !Number.isFinite(lat) ||
+            !Number.isFinite(lng)
+        ) {
+
+            console.log(
+                "Invalid driver location:",
+                data
+            );
+
+            return;
+        }
+
+
+        window.GoRideDriverLocation = {
+            lat: lat,
+            lng: lng
+        };
+
+
+        document.getElementById(
+            "driverLive"
+        ).classList.remove("hidden");
+
+
+        /*
+         * Try to use the map created by map.js.
+         */
+
+        const map =
+            findLeafletMap();
+
+
+        if (
+            !map ||
+            typeof L === "undefined"
+        ) {
+
+            console.log(
+                "Map not ready yet. Driver location saved."
+            );
+
+            return;
+        }
+
+
+        const position =
+            [lat, lng];
+
+
+        /*
+         * Create driver marker once.
+         */
+
+        if (!driverMarker) {
+
+            const icon =
+                L.divIcon({
+
+                    className:
+                        "goride-driver-marker",
+
+                    html:
+                        '<div style="' +
+                        'width:42px;' +
+                        'height:42px;' +
+                        'border-radius:50%;' +
+                        'background:#7c3aed;' +
+                        'border:4px solid white;' +
+                        'box-shadow:0 3px 12px rgba(0,0,0,.25);' +
+                        'display:flex;' +
+                        'align-items:center;' +
+                        'justify-content:center;' +
+                        'font-size:22px;' +
+                        '">🛵</div>',
+
+                    iconSize:
+                        [42, 42],
+
+                    iconAnchor:
+                        [21, 21]
+
+                });
+
+
+            driverMarker =
+                L.marker(
+                    position,
+                    {
+                        icon: icon
+                    }
+                ).addTo(map);
+
+
+            driverMarker.bindPopup(
+                "🛵 Your driver"
+            );
+
+        } else {
+
+            driverMarker.setLatLng(
+                position
+            );
+
+        }
 
     }
 
 
-    if(status === "RIDE_COMPLETED"){
+    /* =====================================================
+       SOCKET
+       ===================================================== */
 
-        driverMessage.textContent =
-            "✅ Ride completed.";
-
-    }
-
-
-    if(status === "CANCELLED"){
-
-        driverMessage.textContent =
-            "❌ This ride has been cancelled.";
-
-    }
-
-}
+    let socket = null;
 
 
-/* =====================================================
-   INITIAL DATA
-   ===================================================== */
+    if (
+        typeof io === "function"
+    ) {
 
-if(activeRide){
+        socket =
+            io(API_BASE, {
 
-    renderRide(
-        activeRide
-    );
-
-}else{
-
-    updateStatusText(
-        "SEARCHING_DRIVER"
-    );
-
-}
-
-
-/* =====================================================
-   SOCKET
-   ===================================================== */
-
-let socket = null;
-
-
-if(typeof io === "function"){
-
-    socket =
-        io(
-            API_BASE,
-            {
-                transports:[
+                transports: [
                     "websocket",
                     "polling"
-                ]
+                ],
+
+                reconnection: true,
+
+                reconnectionAttempts: 10
+
+            });
+
+
+        socket.on(
+            "connect",
+            function () {
+
+                console.log(
+                    "Passenger socket connected:",
+                    socket.id
+                );
+
+
+                const userId =
+                    currentUser?.id ||
+                    currentUser?._id;
+
+
+                if (userId) {
+
+                    socket.emit(
+                        "join:user",
+                        userId
+                    );
+
+                    console.log(
+                        "Passenger joined:",
+                        userId
+                    );
+
+                }
+
+
+                if (activeRide?._id) {
+
+                    socket.emit(
+                        "join:ride",
+                        activeRide._id
+                    );
+
+                    console.log(
+                        "Passenger joined ride:",
+                        activeRide._id
+                    );
+
+                }
+
             }
         );
 
 
-    socket.on(
-        "connect",
-        function(){
+        /* =================================================
+           RIDE UPDATE
+           ================================================= */
 
-            console.log(
-                "Passenger socket connected"
-            );
+        socket.on(
+            "ride:update",
+            function (ride) {
 
-
-            const user =
-                JSON.parse(
-                    localStorage.getItem("user") ||
-                    localStorage.getItem("goride_user") ||
-                    "null"
+                console.log(
+                    "Passenger received ride update:",
+                    ride
                 );
 
 
-            const userId =
-                user?.id ||
-                user?._id;
+                if (!ride) return;
 
 
-            if(userId){
+                if (
+                    activeRide?._id &&
+                    ride._id &&
+                    String(ride._id) !==
+                    String(activeRide._id)
+                ) {
 
-                socket.emit(
-                    "join:user",
-                    userId
-                );
-
-            }
-
-
-            if(activeRide?._id){
-
-                socket.emit(
-                    "join:ride",
-                    activeRide._id
-                );
-
-            }
-
-        }
-    );
+                    return;
+                }
 
 
-    /* =================================================
-       RIDE UPDATE
-       ================================================= */
-
-    socket.on(
-        "ride:update",
-        function(ride){
-
-            console.log(
-                "Passenger received ride update:",
-                ride
-            );
-
-
-            if(!ride) return;
-
-
-            if(
-                activeRide &&
-                ride._id &&
-                String(ride._id) !==
-                String(activeRide._id)
-            ){
-
-                return;
-
-            }
-
-
-            activeRide =
-                {
-                    ...(activeRide || {}),
+                activeRide = {
+                    ...activeRide,
                     ...ride
                 };
+
+
+                localStorage.setItem(
+                    "goride_active_ride",
+                    JSON.stringify(activeRide)
+                );
+
+
+                renderRide();
+
+
+                /*
+                 * If driver accepted,
+                 * immediately show assigned.
+                 */
+
+                if (
+                    ride.status ===
+                    "DRIVER_ASSIGNED" ||
+                    ride.status ===
+                    "DRIVER_ACCEPTED"
+                ) {
+
+                    updateStatus(
+                        "DRIVER_ASSIGNED"
+                    );
+
+                }
+
+
+                /*
+                 * If driver information
+                 * came with the update.
+                 */
+
+                if (
+                    ride.driver ||
+                    ride.driverDetails ||
+                    ride.driverName ||
+                    ride.driverId
+                ) {
+
+                    showDriverInfo(
+                        ride
+                    );
+
+                }
+
+
+                /*
+                 * Completed ride.
+                 */
+
+                if (
+                    ride.status ===
+                    "RIDE_COMPLETED"
+                ) {
+
+                    setTimeout(
+                        function () {
+
+                            window.location.href =
+                                "ride-history.html";
+
+                        },
+                        1800
+                    );
+
+                }
+
+
+                /*
+                 * Cancelled ride.
+                 */
+
+                if (
+                    ride.status ===
+                    "CANCELLED"
+                ) {
+
+                    setTimeout(
+                        function () {
+
+                            window.location.href =
+                                "dashboard.html";
+
+                        },
+                        1800
+                    );
+
+                }
+
+            }
+        );
+
+
+        /* =================================================
+           DRIVER LOCATION
+           ================================================= */
+
+        socket.on(
+            "driver:location",
+            function (data) {
+
+                console.log(
+                    "Live driver location:",
+                    data
+                );
+
+
+                /*
+                 * If server sends ride ID,
+                 * ignore locations from another ride.
+                 */
+
+                if (
+                    data?.rideId &&
+                    activeRide?._id &&
+                    String(data.rideId) !==
+                    String(activeRide._id)
+                ) {
+
+                    return;
+                }
+
+
+                if (
+                    data?.ride_id &&
+                    activeRide?._id &&
+                    String(data.ride_id) !==
+                    String(activeRide._id)
+                ) {
+
+                    return;
+                }
+
+
+                updateDriverLocation(
+                    data
+                );
+
+            }
+        );
+
+
+        /* =================================================
+           DRIVER LOCATION UPDATE
+           ================================================= */
+
+        socket.on(
+            "driver:location:update",
+            function (data) {
+
+                console.log(
+                    "Driver location update:",
+                    data
+                );
+
+
+                updateDriverLocation(
+                    data
+                );
+
+            }
+        );
+
+
+        socket.on(
+            "disconnect",
+            function () {
+
+                console.log(
+                    "Passenger socket disconnected"
+                );
+
+            }
+        );
+
+
+        socket.on(
+            "connect_error",
+            function (error) {
+
+                console.error(
+                    "Passenger socket error:",
+                    error
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       CANCEL RIDE
+       ===================================================== */
+
+    async function cancelRide() {
+
+        if (!activeRide?._id) {
+
+            alert(
+                "No active ride found."
+            );
+
+            return;
+        }
+
+
+        const confirmed =
+            confirm(
+                "Are you sure you want to cancel this ride?"
+            );
+
+
+        if (!confirmed) return;
+
+
+        const token =
+            localStorage.getItem("token") ||
+            localStorage.getItem("goride_token");
+
+
+        try {
+
+            const response =
+                await fetch(
+                    API_BASE +
+                    "/api/rides/" +
+                    activeRide._id +
+                    "/cancel",
+                    {
+
+                        method: "POST",
+
+                        headers: {
+
+                            "Content-Type":
+                                "application/json",
+
+                            ...(token
+                                ? {
+                                    Authorization:
+                                        "Bearer " +
+                                        token
+                                }
+                                : {})
+
+                        }
+
+                    }
+                );
+
+
+            const data =
+                await response.json()
+                    .catch(
+                        () => ({})
+                    );
+
+
+            if (!response.ok) {
+
+                alert(
+                    data.message ||
+                    data.error ||
+                    "Unable to cancel ride."
+                );
+
+                return;
+            }
+
+
+            activeRide.status =
+                "CANCELLED";
 
 
             localStorage.setItem(
@@ -1056,253 +1537,103 @@ if(typeof io === "function"){
             );
 
 
-            renderRide(
-                activeRide
-            );
-
-
-            /* COMPLETED */
-
-            if(
-                activeRide.status ===
-                "RIDE_COMPLETED"
-            ){
-
-                setTimeout(
-                    function(){
-
-                        window.location.href =
-                            "ride-history.html";
-
-                    },
-                    1800
-                );
-
-            }
-
-
-            /* CANCELLED */
-
-            if(
-                activeRide.status ===
+            updateStatus(
                 "CANCELLED"
-            ){
+            );
 
-                setTimeout(
-                    function(){
 
-                        localStorage.removeItem(
-                            "goride_active_ride"
-                        );
+            setTimeout(
+                function () {
 
-                        window.location.href =
-                            "dashboard.html";
+                    window.location.href =
+                        "dashboard.html";
 
-                    },
-                    1800
+                },
+                1200
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Cancel ride error:",
+                error
+            );
+
+
+            alert(
+                "Unable to connect to server."
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       DASHBOARD
+       ===================================================== */
+
+    function goDashboard() {
+
+        window.location.href =
+            "dashboard.html";
+
+    }
+
+
+    /* =====================================================
+       INITIAL LOAD
+       ===================================================== */
+
+    renderRide();
+
+
+    /*
+     * Give map.js time to create
+     * the Leaflet map.
+     */
+
+    setTimeout(
+        function () {
+
+            const savedLocation =
+                window.GoRideDriverLocation;
+
+
+            if (savedLocation) {
+
+                updateDriverLocation(
+                    savedLocation
                 );
 
             }
 
-        }
+        },
+        1500
     );
 
 
-    /* =================================================
-       DRIVER LOCATION
-       ================================================= */
+    /*
+     * Also try again after map loads.
+     */
 
-    socket.on(
-        "driver:location",
-        function(data){
+    setTimeout(
+        function () {
 
-            console.log(
-                "Driver location:",
-                data
-            );
+            if (
+                window.GoRideDriverLocation
+            ) {
 
-
-            window.GoRideDriverLocation =
-                data;
-
-        }
-    );
-
-
-    socket.on(
-        "disconnect",
-        function(){
-
-            console.log(
-                "Passenger socket disconnected"
-            );
-
-        }
-    );
-
-}
-
-
-/* =====================================================
-   CANCEL RIDE
-   ===================================================== */
-
-async function cancelRide(){
-
-    if(!activeRide?._id){
-
-        alert(
-            "No active ride found."
-        );
-
-        return;
-
-    }
-
-
-    const confirmed =
-        confirm(
-            "Are you sure you want to cancel this ride?"
-        );
-
-
-    if(!confirmed) return;
-
-
-    const token =
-        localStorage.getItem("token") ||
-        localStorage.getItem("goride_token");
-
-
-    if(!token){
-
-        alert(
-            "Please login again."
-        );
-
-        return;
-
-    }
-
-
-    const cancelBtn =
-        document.getElementById(
-            "cancelBtn"
-        );
-
-
-    cancelBtn.disabled = true;
-
-    cancelBtn.textContent =
-        "Cancelling...";
-
-
-    try{
-
-        const response =
-            await fetch(
-                API_BASE +
-                "/api/rides/" +
-                activeRide._id +
-                "/cancel",
-                {
-                    method:"POST",
-
-                    headers:{
-                        "Content-Type":
-                            "application/json",
-
-                        "Authorization":
-                            "Bearer " + token
-                    }
-                }
-            );
-
-
-        const data =
-            await response.json();
-
-
-        if(!response.ok){
-
-            throw new Error(
-                data.message ||
-                data.error ||
-                "Unable to cancel ride"
-            );
-
-        }
-
-
-        activeRide =
-            {
-                ...(activeRide || {}),
-                ...(data.ride || {}),
-                status:"CANCELLED"
-            };
-
-
-        localStorage.setItem(
-            "goride_active_ride",
-            JSON.stringify(activeRide)
-        );
-
-
-        updateStatusText(
-            "CANCELLED"
-        );
-
-
-        setTimeout(
-            function(){
-
-                localStorage.removeItem(
-                    "goride_active_ride"
+                updateDriverLocation(
+                    window.GoRideDriverLocation
                 );
 
-                window.location.href =
-                    "dashboard.html";
+            }
 
-            },
-            1200
-        );
-
-
-    }catch(error){
-
-        console.error(
-            "Cancel ride error:",
-            error
-        );
-
-
-        alert(
-            error.message ||
-            "Cancellation failed. Please try again."
-        );
-
-
-        cancelBtn.disabled =
-            false;
-
-        cancelBtn.textContent =
-            "❌ Cancel Ride";
-
-    }
-
-}
-
-
-/* =====================================================
-   DASHBOARD
-   ===================================================== */
-
-function goDashboard(){
-
-    window.location.href =
-        "dashboard.html";
-
-}
+        },
+        3000
+    );
 
 </script>
 
