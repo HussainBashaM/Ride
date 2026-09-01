@@ -63,7 +63,7 @@ function getToken() {
 /* =========================================================
    AUTH HEADERS
    ========================================================= */
-function authHeaders() {
+function getauthHeaders() {
 
     const token =
         localStorage.getItem("token") ||
